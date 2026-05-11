@@ -156,22 +156,22 @@ export default function DashboardPage() {
 
           <nav className="flex-1 px-4 space-y-2 mt-4">
             {[
-              { id: 'stats', label: 'Resumen', icon: BarChart3 },
-              { id: 'list', label: 'Base de Datos', icon: List },
+              { id: 'stats', label: 'Resumen', icon: BarChart3, action: () => setActiveTab('stats') },
+              { id: 'list', label: 'Base de Datos', icon: List, action: () => router.push('/admin/registrations') },
             ].map((item) => (
               <button 
                 key={item.id}
                 onClick={() => {
-                  setActiveTab(item.id as any)
+                  item.action()
                   setIsMobileMenuOpen(false)
                 }}
                 className={`w-full flex items-center gap-3 px-6 py-4 rounded-2xl font-bold transition-all relative overflow-hidden group ${
-                  activeTab === item.id 
+                  (item.id === 'stats' && activeTab === 'stats') 
                     ? 'bg-blue-600 lg:bg-white/10 text-white shadow-xl' 
                     : 'text-slate-400 lg:text-slate-400/60 hover:bg-slate-50 lg:hover:bg-white/5 lg:hover:text-white'
                 }`}
               >
-                {activeTab === item.id && (
+                {item.id === 'stats' && activeTab === 'stats' && (
                   <motion.div layoutId="tabActive" className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent lg:border-l-4 border-red-500" />
                 )}
                 <item.icon className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform" />
