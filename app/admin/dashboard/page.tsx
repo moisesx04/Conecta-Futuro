@@ -278,36 +278,35 @@ export default function DashboardPage() {
               </div>
 
               {/* Area Distribution and Detail Section */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-[600px]">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-[500px]">
                 
-                {/* Left: Overall Area Distribution (Pie Chart) */}
+                {/* Left: Overall Area Distribution (Bar Chart) */}
                 <motion.div 
                   variants={{ hidden: { x: -20, opacity: 0 }, visible: { x: 0, opacity: 1 } }}
-                  className="lg:col-span-4 bg-white rounded-[40px] border border-slate-100 shadow-sm p-8 flex flex-col"
+                  className="lg:col-span-4 bg-white rounded-[32px] border border-slate-100 shadow-sm p-6 flex flex-col"
                 >
                   <div className="mb-6">
                     <h3 className="text-xl font-black text-slate-900 tracking-tight">Distribución por Área</h3>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Visión Global</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Interés General</p>
                   </div>
-                  <div className="flex-1 min-h-0">
+                  <div className="flex-1 min-h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart 
                         data={[
                           { name: 'Artes', count: stats?.by_career?.filter((c: any) => c.name.match(/Diseño|Fotografía|Eventos/i)).reduce((a:any,b:any)=>a+b.count,0) },
                           { name: 'Salud', count: stats?.by_career?.filter((c: any) => c.name.match(/Enfermería|Imagen|Dental/i)).reduce((a:any,b:any)=>a+b.count,0) },
-                          { name: 'Info', count: stats?.by_career?.filter((c: any) => c.name.match(/Software|Redes|Soporte|Videojuegos/i)).reduce((a:any,b:any)=>a+b.count,0) },
+                          { name: 'IT', count: stats?.by_career?.filter((c: any) => c.name.match(/Software|Redes|Soporte|Videojuegos/i)).reduce((a:any,b:any)=>a+b.count,0) },
                           { name: 'Indus', count: stats?.by_career?.filter((c: any) => c.name.match(/Manufactura|Logística|Dirección/i)).reduce((a:any,b:any)=>a+b.count,0) },
                           { name: 'Turis', count: stats?.by_career?.filter((c: any) => c.name.match(/Cocina|Panadería|Gestión/i)).reduce((a:any,b:any)=>a+b.count,0) },
                         ]}
+                        margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                       >
-                        <XAxis dataKey="name" tick={{fontSize: 10, fontWeight: 800}} axisLine={false} tickLine={false} />
+                        <XAxis dataKey="name" tick={{fontSize: 9, fontWeight: 800, fill: '#94a3b8'}} axisLine={false} tickLine={false} />
                         <RechartsTooltip content={<CustomTooltip />} />
-                        <Bar dataKey="count" radius={[10, 10, 0, 0]} fill="#2563eb">
-                          <Cell fill="#3b82f6" />
-                          <Cell fill="#ef4444" />
-                          <Cell fill="#10b981" />
-                          <Cell fill="#f59e0b" />
-                          <Cell fill="#8b5cf6" />
+                        <Bar dataKey="count" radius={[8, 8, 0, 0]} barSize={35}>
+                          { [0,1,2,3,4].map((i) => (
+                            <Cell key={i} fill={i % 2 === 0 ? '#2563eb' : '#ef4444'} />
+                          ))}
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
@@ -317,20 +316,20 @@ export default function DashboardPage() {
                 {/* Right: Detailed Area Explorer */}
                 <motion.div 
                   variants={{ hidden: { x: 20, opacity: 0 }, visible: { x: 0, opacity: 1 } }}
-                  className="lg:col-span-8 bg-slate-900 rounded-[40px] p-8 text-white flex flex-col overflow-hidden"
+                  className="lg:col-span-8 bg-slate-900 rounded-[32px] p-6 text-white flex flex-col overflow-hidden"
                 >
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
                     <div>
                       <h3 className="text-2xl font-black tracking-tight">Explorador de Carreras</h3>
-                      <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">Selecciona un área para ver detalles</p>
+                      <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">Selecciona una categoría</p>
                     </div>
-                    <div className="flex bg-white/10 p-1 rounded-2xl overflow-x-auto max-w-full custom-scrollbar-white">
+                    <div className="flex bg-white/10 p-1.5 rounded-2xl overflow-x-auto max-w-full custom-scrollbar-white gap-1">
                       {['Todos', 'Informática', 'Salud', 'Artes', 'Turismo'].map((area) => (
                         <button 
                           key={area}
                           onClick={() => setSelectedArea(area)}
-                          className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                            selectedArea === area ? 'bg-white text-blue-900 shadow-lg' : 'hover:bg-white/10 text-white/60'
+                          className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
+                            selectedArea === area ? 'bg-white text-blue-900 shadow-lg scale-105' : 'hover:bg-white/10 text-white/50'
                           }`}
                         >
                           {area}
@@ -339,27 +338,27 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  <div className="flex-1 min-h-0">
+                  <div className="flex-1 min-h-[350px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         layout="vertical"
-                        data={chartData.slice(0, 8)}
-                        margin={{ left: 20, right: 40 }}
+                        data={chartData.slice(0, 10)}
+                        margin={{ left: 10, right: 40, top: 0, bottom: 0 }}
                       >
                         <XAxis type="number" hide />
                         <YAxis 
                           dataKey="name" 
                           type="category" 
-                          width={140} 
+                          width={150} 
                           tick={{ fontSize: 9, fontWeight: 700, fill: '#94a3b8' }}
                           axisLine={false}
                           tickLine={false}
                         />
-                        <RechartsTooltip cursor={{ fill: 'rgba(255,255,255,0.05)', radius: 10 }} content={<CustomTooltip />} />
+                        <RechartsTooltip cursor={{ fill: 'rgba(255,255,255,0.03)', radius: 10 }} content={<CustomTooltip />} />
                         <Bar 
                           dataKey="count" 
-                          radius={[0, 10, 10, 0]} 
-                          barSize={24}
+                          radius={[0, 8, 8, 0]} 
+                          barSize={20}
                         >
                           {chartData.map((entry: any, index: number) => (
                             <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#3b82f6' : '#ef4444'} />
@@ -368,9 +367,12 @@ export default function DashboardPage() {
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
-                  <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-center">
-                    <p className="text-white/30 text-[9px] font-black uppercase tracking-[0.2em]">Mostrando top carreras con más interés</p>
-                    <button className="text-[10px] font-black text-blue-400 hover:text-white transition-colors uppercase tracking-widest">Ver Listado Completo</button>
+                  <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
+                    <p className="text-white/20 text-[9px] font-black uppercase tracking-[0.2em]">Ranking dinámico actualizado</p>
+                    <div className="flex gap-2">
+                      <div className="w-2 h-2 rounded-full bg-blue-600" />
+                      <div className="w-2 h-2 rounded-full bg-red-600" />
+                    </div>
                   </div>
                 </motion.div>
 
@@ -381,12 +383,12 @@ export default function DashboardPage() {
               key="list"
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-[48px] border border-slate-100 shadow-sm overflow-hidden"
+              className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden"
             >
-              <div className="p-10 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+              <div className="p-8 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
                 <div>
                   <h3 className="text-2xl font-black text-slate-900 tracking-tight">Base de Datos</h3>
-                  <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Registros en tiempo real</p>
+                  <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Registros consolidados</p>
                 </div>
                 <div className="flex items-center gap-4">
                   <motion.button 
@@ -409,10 +411,10 @@ export default function DashboardPage() {
                       link.download = `conecta_futuro_${new Date().toISOString().split('T')[0]}.csv`;
                       link.click();
                     }}
-                    className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-full font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-600/20"
+                    className="flex items-center gap-3 px-6 py-3 bg-blue-600 text-white rounded-full font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-600/20"
                   >
                     <Download className="w-4 h-4" />
-                    <span>Descargar CSV</span>
+                    <span>Exportar</span>
                   </motion.button>
                 </div>
               </div>
@@ -421,30 +423,30 @@ export default function DashboardPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="bg-slate-50/50">
-                      <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Estudiante</th>
-                      <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Institución</th>
-                      <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Carrera</th>
-                      <th className="px-10 py-6 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Acción</th>
+                      <th className="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Estudiante</th>
+                      <th className="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Institución</th>
+                      <th className="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Carrera</th>
+                      <th className="px-8 py-5 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Acción</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {registrations.map((r, i) => (
                       <tr key={r.id} className="hover:bg-slate-50/50 transition-colors group">
-                        <td className="px-10 py-6">
-                          <p className="font-black text-slate-900">{r.full_name}</p>
+                        <td className="px-8 py-5">
+                          <p className="font-black text-slate-900 text-sm">{r.full_name}</p>
                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{new Date(r.created_at).toLocaleDateString()}</p>
                         </td>
-                        <td className="px-10 py-6">
-                          <span className="text-xs font-bold text-slate-500">{r.school_name || 'Particular'}</span>
+                        <td className="px-8 py-5">
+                          <span className="text-[11px] font-bold text-slate-500">{r.school_name || 'Particular'}</span>
                         </td>
-                        <td className="px-10 py-6">
-                          <span className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg font-black text-[9px] uppercase tracking-widest">
+                        <td className="px-8 py-5">
+                          <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg font-black text-[9px] uppercase tracking-widest border border-blue-100/30">
                             {r.career_name}
                           </span>
                         </td>
-                        <td className="px-10 py-6 text-right">
+                        <td className="px-8 py-5 text-right">
                           <button className="p-2 bg-slate-100 rounded-full hover:bg-blue-600 hover:text-white transition-all">
-                            <ChevronRight className="w-4 h-4" />
+                            <ChevronRight className="w-3 h-3" />
                           </button>
                         </td>
                       </tr>
@@ -472,7 +474,7 @@ export default function DashboardPage() {
           height: 4px;
         }
         .custom-scrollbar-white::-webkit-scrollbar-thumb {
-          background: rgba(255,255,255,0.2);
+          background: rgba(255,255,255,0.1);
           border-radius: 10px;
         }
       `}</style>
