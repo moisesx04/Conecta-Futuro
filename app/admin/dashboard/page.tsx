@@ -157,7 +157,7 @@ export default function DashboardPage() {
           <nav className="flex-1 px-4 space-y-2 mt-4">
             {[
               { id: 'stats', label: 'Resumen', icon: BarChart3 },
-              { id: 'list', label: 'Registros', icon: List },
+              { id: 'list', label: 'Base de Datos', icon: List },
             ].map((item) => (
               <button 
                 key={item.id}
@@ -178,6 +178,16 @@ export default function DashboardPage() {
                 <span className="relative z-10">{item.label}</span>
               </button>
             ))}
+
+            {/* Direct Link to Public Form */}
+            <a 
+              href="/registro"
+              target="_blank"
+              className="w-full flex items-center gap-3 px-6 py-4 rounded-2xl font-bold text-blue-400 hover:bg-white/5 transition-all group mt-10 border border-white/5"
+            >
+              <ExternalLink className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+              <span>Ver Formulario</span>
+            </a>
           </nav>
 
           <div className="p-6 border-t border-slate-100 lg:border-white/5">
@@ -209,27 +219,28 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="px-6 py-3 bg-white/40 backdrop-blur-md border border-white rounded-2xl flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Link Oficial</p>
-                <p className="text-[11px] font-bold text-blue-600">conecta-futuro.vercel.app</p>
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="px-6 py-3 bg-white/40 backdrop-blur-md border border-white rounded-2xl flex items-center gap-4">
+                <div className="text-right">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Link Oficial</p>
+                  <p className="text-[11px] font-bold text-blue-600">/registro</p>
+                </div>
+                <button 
+                  onClick={handleCopyLink}
+                  className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20"
+                >
+                  {copySuccess ? <ShieldCheck className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                </button>
               </div>
-              <button 
-                onClick={handleCopyLink}
-                className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20"
+              <a 
+                href="/registro" 
+                target="_blank"
+                className="flex items-center gap-3 px-6 py-4 bg-white/60 backdrop-blur-md border border-white text-slate-600 rounded-2xl hover:bg-white transition-all shadow-sm group font-bold text-xs"
               >
-                {copySuccess ? <ShieldCheck className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-              </button>
+                <ExternalLink className="w-5 h-5 group-hover:text-blue-600" />
+                <span>Abrir Registro</span>
+              </a>
             </div>
-            <a 
-              href="/registro" 
-              target="_blank"
-              className="p-4 bg-white/40 backdrop-blur-md border border-white text-slate-600 rounded-2xl hover:bg-white transition-all shadow-sm group"
-            >
-              <ExternalLink className="w-6 h-6 group-hover:text-blue-600" />
-            </a>
-          </div>
         </header>
 
         <AnimatePresence mode="wait">
