@@ -14,21 +14,18 @@ export async function GET() {
         ORDER BY r.created_at DESC
       `)
       
-      // Si la DB es real pero está vacía, o si la consulta funciona:
       const formatted = res.rows.map(r => ({
         ...r,
         school_name: r.school_name || r.new_school_name || 'Particular',
         career_name: r.career_name || r.new_career_name || 'Otra'
       }))
 
-      if (formatted.length > 0) {
-        return NextResponse.json(formatted)
-      }
+      return NextResponse.json(formatted)
     }
   } catch (error) {
-    console.error('DB Error, using demo data:', error)
+    console.error('DB Error:', error)
+    return NextResponse.json({ error: 'Error al conectar con la base de datos' }, { status: 500 })
   }
 
-  // 2. Fallback a datos Demo
-  return NextResponse.json(demoRegistrations)
+  return NextResponse.json([])
 }
