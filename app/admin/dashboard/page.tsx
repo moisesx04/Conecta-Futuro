@@ -37,6 +37,7 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'stats' | 'list'>('stats')
   const [loading, setLoading] = useState(true)
   const [copySuccess, setCopySuccess] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [selectedArea, setSelectedArea] = useState('Todos')
   const router = useRouter()
 
