@@ -1,6 +1,6 @@
 // app/api/admin/login/route.ts
 import { NextResponse } from 'next/server';
-import { query } from '@/lib/db';
+import { query } from '../../../../lib/db';
 import jwt from 'jsonwebtoken';
 
 export async function POST(request: Request) {
