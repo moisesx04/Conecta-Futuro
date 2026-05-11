@@ -1,0 +1,22 @@
+/* app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #ef4444;
+  --secondary: #3b82f6;
+  --background: #ffffff;
+}
+
+body {
+  color: #1a1a1a;
+  background: var(--background);
+  overflow-x: hidden;
+}
+
+@layer components {
+  .btn-premium {
+    @apply px-6 py-3 rounded-2xl font-semibold transition-all duration-300 active:scale-95 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:pointer-events-none;
+  }
+}
