@@ -1,9 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['pg'],
-  },
+  serverExternalPackages: ['pg', 'jsonwebtoken'],
 };
 
 export default nextConfig;
