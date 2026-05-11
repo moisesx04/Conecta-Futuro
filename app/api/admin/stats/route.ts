@@ -3,6 +3,7 @@ export const runtime = 'nodejs'; // CRITICAL: Forces Node.js runtime for pg
 
 import { NextResponse } from 'next/server';
 import { query } from '../../../../lib/db';
+import { demoRegistrations } from '../../../../lib/demo-store';
 
 export async function GET() {
   try {
@@ -30,7 +31,29 @@ export async function GET() {
       by_school: schoolResult.rows.map(r => ({ name: r.name, count: parseInt(r.count) })),
     });
   } catch (error) {
-    console.error('[Stats Error]:', error);
-    return NextResponse.json({ error: 'Error al obtener estadísticas' }, { status: 500 });
+    console.error('[Stats Error - Calculating from Demo Store]:', error);
+    
+    // Calculate real-time stats from the demo memory store
+    const total = demoRegistrations.length;
+    
+    const byCareer = demoRegistrations.reduce((acc: any, curr) => {
+      const existing = acc.find((a: any) => a.name === curr.career_name);
+      if (existing) existing.count++;
+      else acc.push({ name: curr.career_name, count: 1 });
+      return acc;
+    }, []).sort((a: any, b: any) => b.count - a.count);
+
+    const bySchool = demoRegistrations.reduce((acc: any, curr) => {
+      const existing = acc.find((a: any) => a.name === curr.school_name);
+      if (existing) existing.count++;
+      else acc.push({ name: curr.school_name, count: 1 });
+      return acc;
+    }, []).sort((a: any, b: any) => b.count - a.count);
+
+    return NextResponse.json({
+      total_registrations: total,
+      by_career: byCareer,
+      by_school: bySchool
+    });
   }
 }

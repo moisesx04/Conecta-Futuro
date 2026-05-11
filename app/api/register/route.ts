@@ -1,47 +1,40 @@
-// app/api/register/route.ts
-export const runtime = 'nodejs'; // CRITICAL: Forces Node.js runtime for pg
+import { NextResponse } from 'next/server'
+import { query } from '@/lib/db'
+import { demoRegistrations } from '@/lib/demo-store'
 
-import { NextResponse } from 'next/server';
-import { query } from '../../../lib/db';
-
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
-    const { full_name, school_id, career_id, new_school_name, new_career_name, motivation } = body;
+    const body = await req.json()
+    const { full_name, school_id, career_id, new_school_name, new_career_name, motivation } = body
 
-    if (!full_name || !motivation) {
-      return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 });
+    // 1. Intentar guardar en Base de Datos Real (Supabase)
+    try {
+      if (process.env.DATABASE_URL) {
+        await query(
+          `INSERT INTO registrations 
+          (full_name, school_id, career_id, new_school_name, new_career_name, motivation) 
+          VALUES ($1, $2, $3, $4, $5, $6)`,
+          [full_name, school_id, career_id, new_school_name, new_career_name, motivation]
+        )
+        return NextResponse.json({ success: true, mode: 'production' })
+      }
+    } catch (dbError) {
+      console.error('Database Error, falling back to demo store:', dbError)
     }
 
-    let finalSchoolId = school_id;
-    let finalCareerId = career_id;
-
-    // Insert new school if provided
-    if (new_school_name?.trim()) {
-      const s = await query(
-        'INSERT INTO schools (name) VALUES ($1) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id',
-        [new_school_name.trim()]
-      );
-      finalSchoolId = s.rows[0].id;
+    // 2. Fallback a Demo Store (Modo Local)
+    const newReg = {
+      id: Date.now(),
+      full_name,
+      school_name: new_school_name || 'Escuela Demo',
+      career_name: new_career_name || 'Carrera Demo',
+      created_at: new Date().toISOString(),
+      motivation
     }
-
-    // Insert new career if provided
-    if (new_career_name?.trim()) {
-      const c = await query(
-        'INSERT INTO careers (name) VALUES ($1) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id',
-        [new_career_name.trim()]
-      );
-      finalCareerId = c.rows[0].id;
-    }
-
-    await query(
-      'INSERT INTO registrations (full_name, school_id, career_id, motivation) VALUES ($1, $2, $3, $4)',
-      [full_name.trim(), finalSchoolId || null, finalCareerId || null, motivation.trim()]
-    );
-
-    return NextResponse.json({ message: 'Registro exitoso' }, { status: 201 });
+    demoRegistrations.unshift(newReg)
+    
+    return NextResponse.json({ success: true, mode: 'demo' })
   } catch (error) {
-    console.error('[Register Error]:', error);
-    return NextResponse.json({ error: 'Error al registrar' }, { status: 500 });
+    return NextResponse.json({ error: 'Error al registrar' }, { status: 500 })
   }
 }
