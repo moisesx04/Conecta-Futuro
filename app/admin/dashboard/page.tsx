@@ -53,10 +53,10 @@ export default function DashboardPage() {
 
   const schoolData = stats?.by_school?.sort((a: any, b: any) => b.count - a.count) || []
   
-  // Mock activity data for the line chart (real systems would fetch this)
-  const activityData = [
-    { name: 'Lun', val: 2 }, { name: 'Mar', val: 5 }, { name: 'Mie', val: 3 },
-    { name: 'Jue', val: 8 }, { name: 'Vie', val: 12 }, { name: 'Sab', val: 7 }, { name: 'Dom', val: 4 }
+  // Real activity data from database
+  const activityData = stats?.activity || [
+    { name: 'Lun', val: 0 }, { name: 'Mar', val: 0 }, { name: 'Mie', val: 0 },
+    { name: 'Jue', val: 0 }, { name: 'Vie', val: 0 }, { name: 'Sab', val: 0 }, { name: 'Dom', val: 0 }
   ]
 
 
@@ -193,20 +193,10 @@ export default function DashboardPage() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-6 lg:p-10 overflow-y-auto custom-scrollbar z-10 relative">
-        {/* Mobile Header */}
-        <div className="lg:hidden flex items-center justify-between mb-8 bg-white p-4 rounded-[24px] border border-slate-100 shadow-sm">
-          <button onClick={() => setIsMobileMenuOpen(true)} className="p-3 bg-slate-50 rounded-xl">
-            <Menu className="w-6 h-6 text-blue-900" />
-          </button>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-900 rounded-lg flex items-center justify-center text-white">
-              <GraduationCap className="w-5 h-5" />
-            </div>
-      <main className="lg:ml-72 p-6 lg:p-12 relative z-10">
+      <main className="flex-1 lg:ml-72 p-6 lg:p-12 relative z-10 min-h-screen">
         <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-16">
           <div className="flex items-center gap-6">
-            <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-4 bg-white rounded-2xl shadow-sm">
+            <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
               <Menu className="w-6 h-6 text-slate-600" />
             </button>
             <div>

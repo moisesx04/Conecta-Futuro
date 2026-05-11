@@ -85,6 +85,23 @@ export default function RegistroPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 font-sans">
+        <motion.div 
+          animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          className="flex flex-col items-center gap-6"
+        >
+          <div className="w-20 h-20 bg-white rounded-[32px] flex items-center justify-center shadow-2xl shadow-blue-500/10 border border-white">
+            <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+          </div>
+          <p className="text-slate-400 font-black text-[10px] uppercase tracking-[0.3em]">Iniciando Conecta Futuro...</p>
+        </motion.div>
+      </main>
+    )
+  }
+
   if (success) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center p-6 text-center font-sans">

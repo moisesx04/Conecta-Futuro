@@ -7,7 +7,7 @@ import { demoRegistrations } from '../../../../lib/demo-store';
 
 export async function GET() {
   try {
-    const [totalResult, careerResult, schoolResult] = await Promise.all([
+    const [totalResult, careerResult, schoolResult, activityResult] = await Promise.all([
       query('SELECT COUNT(*) as count FROM registrations'),
       query(`
         SELECT c.name, COUNT(r.id) as count 
@@ -23,12 +23,22 @@ export async function GET() {
         GROUP BY s.id, s.name 
         ORDER BY count DESC
       `),
+      query(`
+        SELECT 
+          TO_CHAR(created_at, 'Dy') as name,
+          COUNT(*) as val
+        FROM registrations
+        WHERE created_at > NOW() - INTERVAL '7 days'
+        GROUP BY TO_CHAR(created_at, 'Dy'), DATE_TRUNC('day', created_at)
+        ORDER BY DATE_TRUNC('day', created_at) ASC
+      `),
     ]);
 
     return NextResponse.json({
       total_registrations: parseInt(totalResult.rows[0].count),
       by_career: careerResult.rows.map(r => ({ name: r.name, count: parseInt(r.count) })),
       by_school: schoolResult.rows.map(r => ({ name: r.name, count: parseInt(r.count) })),
+      activity: activityResult.rows.map(r => ({ name: r.name, val: parseInt(r.val) })),
     });
   } catch (error) {
     console.error('[Stats Error - Calculating from Demo Store]:', error);
