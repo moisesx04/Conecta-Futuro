@@ -485,27 +485,34 @@ export default function DashboardPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/40">
-                    {registrations.map((r, i) => (
-                      <tr key={r.id} className="hover:bg-white/60 transition-colors group">
-                        <td className="px-8 py-5">
-                          <p className="font-black text-slate-900 text-sm">{r.full_name}</p>
-                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{new Date(r.created_at).toLocaleDateString()}</p>
-                        </td>
-                        <td className="px-8 py-5">
-                          <span className="text-[11px] font-bold text-slate-500">{r.school_name || 'Particular'}</span>
-                        </td>
-                        <td className="px-8 py-5">
-                          <span className="px-3 py-1 bg-blue-50/50 backdrop-blur-sm text-blue-600 rounded-lg font-black text-[9px] uppercase tracking-widest border border-blue-100/30">
-                            {r.career_name}
-                          </span>
-                        </td>
-                        <td className="px-8 py-5 text-right">
-                          <button className="p-2 bg-slate-100/50 rounded-full hover:bg-blue-600 hover:text-white transition-all">
-                            <ChevronRight className="w-3 h-3" />
-                          </button>
+                    {Array.isArray(registrations) && registrations.length > 0 ? (
+                      registrations.map((r, i) => (
+                        <tr key={r?.id || i} className="hover:bg-white/60 transition-colors group">
+                          <td className="px-8 py-5">
+                            <p className="font-black text-slate-900 text-sm">{r?.full_name || 'Sin Nombre'}</p>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
+                              {r?.created_at ? new Date(r.created_at).toLocaleDateString() : 'Sin fecha'}
+                            </p>
+                          </td>
+                          <td className="px-8 py-5 text-slate-600 text-xs font-bold">{r?.school_name}</td>
+                          <td className="px-8 py-5 text-blue-600 text-xs font-black">{r?.career_name}</td>
+                          <td className="px-8 py-5 text-right">
+                            <button className="p-3 bg-slate-50 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all">
+                              <X className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={4} className="px-8 py-20 text-center">
+                          <div className="flex flex-col items-center opacity-20">
+                            <Users className="w-12 h-12 mb-4" />
+                            <p className="text-[10px] font-black uppercase tracking-widest">No se encontraron registros reales</p>
+                          </div>
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
