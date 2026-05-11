@@ -242,34 +242,42 @@ export default function DashboardPage() {
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-transparent to-slate-50 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </motion.div>
                 ))}
-              </div>
-
-              {/* Charts Section */}
+              </div>              {/* Charts Section */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                {/* Interés por Carrera */}
                 <motion.div 
                   variants={{
                     hidden: { x: -20, opacity: 0 },
                     visible: { x: 0, opacity: 1 }
                   }}
-                  className="bg-white p-10 rounded-[48px] border border-slate-200 shadow-sm shadow-slate-100"
+                  className="bg-white rounded-[48px] border border-slate-200 shadow-sm shadow-slate-100 flex flex-col h-[600px] overflow-hidden"
                 >
-                  <h3 className="text-2xl font-black text-slate-900 mb-10 flex items-center gap-4">
-                    <div className="w-2 h-8 bg-blue-600 rounded-full shadow-[0_0_15px_rgba(37,99,235,0.3)]" />
-                    Interés por Carrera
-                  </h3>
-                  <div className="space-y-8">
-                    {stats?.by_career?.slice(0, 5).map((c: any, i: number) => (
+                  <div className="p-10 pb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-2xl font-black text-slate-900 flex items-center gap-4">
+                        <div className="w-2 h-8 bg-blue-600 rounded-full shadow-[0_0_15px_rgba(37,99,235,0.3)]" />
+                        Interés por Carrera
+                      </h3>
+                      <span className="px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest">
+                        {stats?.by_career?.length || 0} Carreras
+                      </span>
+                    </div>
+                    <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest px-6">Ranking de Demanda</p>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto px-10 pb-10 custom-scrollbar space-y-6">
+                    {stats?.by_career?.sort((a: any, b: any) => b.count - a.count).map((c: any, i: number) => (
                       <div key={i} className="group">
                         <div className="flex items-center justify-between mb-2 px-1">
-                          <span className="font-bold text-slate-600 group-hover:text-blue-600 transition-colors">{c.name}</span>
-                          <span className="font-black text-slate-900 text-lg">{c.count}</span>
+                          <span className="font-bold text-slate-600 group-hover:text-blue-600 transition-colors text-sm line-clamp-1 flex-1 pr-4">{c.name}</span>
+                          <span className="font-black text-slate-900 bg-slate-50 px-3 py-1 rounded-lg text-xs">{c.count}</span>
                         </div>
                         <div className="h-3 bg-slate-50 rounded-full overflow-hidden p-0.5">
                           <motion.div 
                             initial={{ width: 0 }} 
                             animate={{ width: `${(c.count / (stats?.total_registrations || 1)) * 100}%` }} 
-                            transition={{ type: "spring", bounce: 0.3, duration: 1.5, delay: 0.5 + (i * 0.1) }}
-                            className="h-full bg-blue-600 rounded-full" 
+                            transition={{ type: "spring", bounce: 0.3, duration: 1.5, delay: 0.1 + (i * 0.05) }}
+                            className="h-full bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.2)]" 
                           />
                         </div>
                       </div>
@@ -277,37 +285,47 @@ export default function DashboardPage() {
                   </div>
                 </motion.div>
 
+                {/* Top por Institución */}
                 <motion.div 
                   variants={{
                     hidden: { x: 20, opacity: 0 },
                     visible: { x: 0, opacity: 1 }
                   }}
-                  className="bg-white p-10 rounded-[48px] border border-slate-200 shadow-sm shadow-slate-100"
+                  className="bg-white rounded-[48px] border border-slate-200 shadow-sm shadow-slate-100 flex flex-col h-[600px] overflow-hidden"
                 >
-                  <h3 className="text-2xl font-black text-slate-900 mb-10 flex items-center gap-4">
-                    <div className="w-2 h-8 bg-red-600 rounded-full shadow-[0_0_15px_rgba(220,38,38,0.3)]" />
-                    Top por Institución
-                  </h3>
-                  <div className="space-y-8">
-                    {stats?.by_school?.slice(0, 5).map((s: any, i: number) => (
+                  <div className="p-10 pb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-2xl font-black text-slate-900 flex items-center gap-4">
+                        <div className="w-2 h-8 bg-red-600 rounded-full shadow-[0_0_15px_rgba(220,38,38,0.3)]" />
+                        Top por Institución
+                      </h3>
+                      <span className="px-4 py-1.5 bg-red-50 text-red-600 rounded-full text-[10px] font-black uppercase tracking-widest">
+                        {stats?.by_school?.length || 0} Liceos
+                      </span>
+                    </div>
+                    <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest px-6">Centros con más Registros</p>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto px-10 pb-10 custom-scrollbar space-y-6">
+                    {stats?.by_school?.sort((a: any, b: any) => b.count - a.count).map((s: any, i: number) => (
                       <div key={i} className="group">
                         <div className="flex items-center justify-between mb-2 px-1">
-                          <span className="font-bold text-slate-600 group-hover:text-red-600 transition-colors">{s.name}</span>
-                          <span className="font-black text-slate-900 text-lg">{s.count}</span>
+                          <span className="font-bold text-slate-600 group-hover:text-red-600 transition-colors text-sm line-clamp-1 flex-1 pr-4">{s.name}</span>
+                          <span className="font-black text-slate-900 bg-red-50 px-3 py-1 rounded-lg text-xs">{s.count}</span>
                         </div>
                         <div className="h-3 bg-slate-50 rounded-full overflow-hidden p-0.5">
                           <motion.div 
                             initial={{ width: 0 }} 
                             animate={{ width: `${(s.count / (stats?.total_registrations || 1)) * 100}%` }} 
-                            transition={{ type: "spring", bounce: 0.3, duration: 1.5, delay: 0.5 + (i * 0.1) }}
-                            className="h-full bg-red-600 rounded-full" 
+                            transition={{ type: "spring", bounce: 0.3, duration: 1.5, delay: 0.1 + (i * 0.05) }}
+                            className="h-full bg-gradient-to-r from-red-600 to-orange-500 rounded-full shadow-[0_0_8px_rgba(220,38,38,0.2)]" 
                           />
                         </div>
                       </div>
                     ))}
                   </div>
                 </motion.div>
-              </div>
+              </div>div>
             </motion.div>
           ) : (
             <motion.div 
