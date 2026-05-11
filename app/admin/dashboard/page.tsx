@@ -203,84 +203,75 @@ export default function DashboardPage() {
             <div className="w-8 h-8 bg-blue-900 rounded-lg flex items-center justify-center text-white">
               <GraduationCap className="w-5 h-5" />
             </div>
-            <span className="font-black text-blue-900 text-sm tracking-tight">Dashboard</span>
-          </div>
-          <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center">
-            <ShieldCheck className="w-5 h-5 text-red-500" />
-          </div>
-        </div>
-
-        <header className="flex flex-col md:flex-row justify-between items-start gap-6 mb-12">
-          <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight">Dashboard</h1>
-            <div className="flex items-center gap-2 text-slate-400 font-bold text-sm mt-1">
-              <div className="w-2 h-2 bg-red-600 rounded-full animate-ping" />
-              <span>Actividad en Tiempo Real</span>
+      <main className="lg:ml-72 p-6 lg:p-12 relative z-10">
+        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-16">
+          <div className="flex items-center gap-6">
+            <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-4 bg-white rounded-2xl shadow-sm">
+              <Menu className="w-6 h-6 text-slate-600" />
+            </button>
+            <div>
+              <h2 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">Dashboard</h2>
+              <div className="flex items-center gap-3 mt-2">
+                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">Actividad en Tiempo Real</p>
+              </div>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }} 
-            animate={{ scale: 1, opacity: 1 }}
-            className="flex items-center gap-3 bg-white/50 backdrop-blur-md p-2 rounded-full border border-white shadow-2xl shadow-slate-200/40 w-full md:w-auto"
-          >
-            <div className="px-5 py-3 bg-white/50 rounded-full hidden xl:block border border-white shadow-inner">
-              <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5">Link Oficial</p>
-              <p className="text-xs font-bold text-blue-600">conecta-futuro.vercel.app</p>
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="px-6 py-3 bg-white/40 backdrop-blur-md border border-white rounded-2xl flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Link Oficial</p>
+                <p className="text-[11px] font-bold text-blue-600">conecta-futuro.vercel.app</p>
+              </div>
+              <button 
+                onClick={handleCopyLink}
+                className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20"
+              >
+                {copySuccess ? <ShieldCheck className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+              </button>
             </div>
-            <motion.button 
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleCopyLink}
-              className="flex-1 md:flex-none flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-full font-black text-sm transition-all shadow-xl shadow-blue-600/30 border-t border-white/20"
+            <a 
+              href="/registro" 
+              target="_blank"
+              className="p-4 bg-white/40 backdrop-blur-md border border-white text-slate-600 rounded-2xl hover:bg-white transition-all shadow-sm group"
             >
-              {copySuccess ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Copy className="w-4 h-4" />}
-              <span>{copySuccess ? '¡Copiado!' : 'Copiar Link'}</span>
-            </motion.button>
-            <motion.button 
-              whileHover={{ scale: 1.05, rotate: 5, y: -2 }}
-              onClick={() => window.open('/registro', '_blank')}
-              className="p-4 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white rounded-full transition-all shadow-xl shadow-red-600/30 border-t border-white/20"
-            >
-              <ExternalLink className="w-6 h-6" />
-            </motion.button>
-          </motion.div>
+              <ExternalLink className="w-6 h-6 group-hover:text-blue-600" />
+            </a>
+          </div>
         </header>
 
         <AnimatePresence mode="wait">
           {activeTab === 'stats' ? (
             <motion.div 
               key="stats"
-              initial="hidden"
-              animate="visible"
-              variants={{
-                visible: { transition: { staggerChildren: 0.1 } }
-              }}
-              className="space-y-10"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-12"
             >
-              {/* Compact KPIs */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {[
-                  { label: 'Total Registros', value: stats?.total_registrations || 0, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-                  { label: 'Escuelas', value: stats?.by_school?.length || 0, icon: School, color: 'text-red-600', bg: 'bg-red-50' },
-                  { label: 'Carreras', value: stats?.by_career?.length || 0, icon: BarChart3, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                ].map((kpi, i) => (
+                  { label: 'Total Registros', val: stats?.total_registrations || 0, icon: Users, color: 'text-blue-600', bg: 'bg-blue-600' },
+                  { label: 'Escuelas', val: stats?.by_school?.length || 0, icon: School, color: 'text-red-600', bg: 'bg-red-600' },
+                  { label: 'Carreras', val: stats?.by_career?.length || 0, icon: BarChart3, color: 'text-emerald-600', bg: 'bg-emerald-600' }
+                ].map((stat, i) => (
                   <motion.div 
-                    key={i}
-                    variants={{
-                      hidden: { y: 20, opacity: 0 },
-                      visible: { y: 0, opacity: 1 }
-                    }}
-                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                    className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex items-center gap-6 group relative overflow-hidden"
+                    key={i} 
+                    whileHover={{ scale: 1.02, y: -5 }}
+                    className="group bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] p-8 transition-all shadow-[0_20px_50px_rgba(0,0,0,0.03)] relative overflow-hidden"
                   >
-                    <div className={`w-16 h-16 ${kpi.bg} ${kpi.color} rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-500`}>
-                      <kpi.icon className="w-8 h-8" />
+                    <div className="relative z-10 flex items-center justify-between">
+                      <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{stat.label}</p>
+                        <h4 className="text-5xl font-black text-slate-900 tracking-tighter">{stat.val}</h4>
+                      </div>
+                      <div className={`w-16 h-16 ${stat.bg}/10 rounded-2xl flex items-center justify-center`}>
+                        <stat.icon className={`w-8 h-8 ${stat.color}`} />
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-slate-400 font-black uppercase text-[10px] tracking-widest mb-1">{kpi.label}</h3>
-                      <p className="text-4xl font-black text-slate-900 tracking-tighter">{kpi.value}</p>
-                    </div>
+                    {/* Hover Decoration */}
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-transparent to-slate-50 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </motion.div>
                 ))}
@@ -288,19 +279,12 @@ export default function DashboardPage() {
 
               {/* Row 1: Activity Line Chart (Wide) */}
               <motion.div 
-                variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
-                className="bg-white rounded-[32px] border border-slate-100 shadow-sm p-8 flex flex-col mb-8 h-[350px]"
+                className="bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.03)] p-8 flex flex-col mb-8 h-[350px]"
               >
                 <div className="flex justify-between items-center mb-6">
                   <div>
                     <h3 className="text-xl font-black text-slate-900 tracking-tight">Actividad de Registro</h3>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Tendencia de los últimos 7 días</p>
-                  </div>
-                  <div className="flex gap-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-blue-600" />
-                      <span className="text-[10px] font-black text-slate-400 uppercase">Inscritos</span>
-                    </div>
                   </div>
                 </div>
                 <div className="flex-1 min-h-0">
@@ -312,7 +296,7 @@ export default function DashboardPage() {
                           <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                       <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} dy={10} />
                       <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} />
                       <RechartsTooltip content={<CustomTooltip />} />
@@ -327,8 +311,7 @@ export default function DashboardPage() {
                 
                 {/* Left: Institution Donut Chart */}
                 <motion.div 
-                  variants={{ hidden: { x: -20, opacity: 0 }, visible: { x: 0, opacity: 1 } }}
-                  className="lg:col-span-4 bg-white rounded-[32px] border border-slate-100 shadow-sm p-8 flex flex-col h-[450px]"
+                  className="lg:col-span-4 bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.03)] p-8 flex flex-col h-[450px]"
                 >
                   <div className="mb-8">
                     <h3 className="text-xl font-black text-slate-900 tracking-tight">Top Instituciones</h3>
@@ -359,27 +342,15 @@ export default function DashboardPage() {
                       <p className="text-[8px] font-black text-slate-400 uppercase mt-1">Total</p>
                     </div>
                   </div>
-                  <div className="mt-6 space-y-3">
-                    {schoolData.slice(0, 3).map((s: any, i: number) => (
-                      <div key={i} className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${i % 2 === 0 ? 'bg-blue-600' : 'bg-red-600'}`} />
-                          <span className="text-[10px] font-bold text-slate-500 line-clamp-1 max-w-[120px]">{s.name}</span>
-                        </div>
-                        <span className="text-[10px] font-black text-slate-900">{s.count}</span>
-                      </div>
-                    ))}
-                  </div>
                 </motion.div>
 
                 {/* Right: Modern Career Explorer */}
                 <motion.div 
-                  variants={{ hidden: { x: 20, opacity: 0 }, visible: { x: 0, opacity: 1 } }}
-                  className="lg:col-span-8 bg-slate-900 rounded-[32px] p-8 text-white flex flex-col h-[450px]"
+                  className="lg:col-span-8 bg-slate-900/90 backdrop-blur-2xl border border-white/5 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 text-white flex flex-col h-[450px]"
                 >
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
                     <div>
-                      <h3 className="text-xl font-black tracking-tight">Interés por Carrera</h3>
+                      <h3 className="text-xl font-black tracking-tight text-white">Interés por Carrera</h3>
                       <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">Filtrar por Especialidad</p>
                     </div>
                     <div className="flex bg-white/5 p-1 rounded-xl overflow-x-auto max-w-full custom-scrollbar-white gap-1">
@@ -409,7 +380,7 @@ export default function DashboardPage() {
                           dataKey="name" 
                           type="category" 
                           width={140} 
-                          tick={{ fontSize: 9, fontWeight: 700, fill: '#64748b' }}
+                          tick={{ fontSize: 9, fontWeight: 700, fill: '#94a3b8' }}
                           axisLine={false}
                           tickLine={false}
                         />
@@ -426,21 +397,7 @@ export default function DashboardPage() {
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
-                  <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
-                    <div className="flex items-center gap-4">
-                       <div className="flex items-center gap-2">
-                         <div className="w-2 h-2 rounded-full bg-blue-500" />
-                         <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest">Masculino</span>
-                       </div>
-                       <div className="flex items-center gap-2">
-                         <div className="w-2 h-2 rounded-full bg-red-500" />
-                         <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest">Femenino</span>
-                       </div>
-                    </div>
-                    <button className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Ver Todo</button>
-                  </div>
                 </motion.div>
-
               </div>
             </motion.div>
           ) : (
@@ -448,55 +405,46 @@ export default function DashboardPage() {
               key="list"
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden"
+              className="bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.03)] overflow-hidden"
             >
-              <div className="p-8 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+              <div className="p-8 border-b border-white/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
                 <div>
                   <h3 className="text-2xl font-black text-slate-900 tracking-tight">Base de Datos</h3>
                   <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Registros consolidados</p>
                 </div>
                 <div className="flex items-center gap-4">
-                  <motion.button 
-                    whileHover={{ scale: 1.05 }}
+                  <button 
                     onClick={() => {
                       if (!registrations.length) return
-                      const headers = ['Estudiante', 'Institución', 'Carrera', 'Fecha'];
-                      const csvContent = [
-                        headers.join(','),
-                        ...registrations.map((r: any) => [
-                          `"${r.full_name}"`,
-                          `"${r.school_name}"`,
-                          `"${r.career_name}"`,
-                          new Date(r.created_at).toLocaleDateString()
-                        ].join(','))
-                      ].join('\n');
-                      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                      const link = document.createElement('a');
-                      link.href = URL.createObjectURL(blob);
-                      link.download = `conecta_futuro_${new Date().toISOString().split('T')[0]}.csv`;
-                      link.click();
+                      const csvContent = registrations.map((r: any) => [r.full_name, r.school_name, r.career_name].join(',')).join('\n');
+                      const blob = new Blob([csvContent], { type: 'text/csv' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = 'registros.csv';
+                      a.click();
                     }}
                     className="flex items-center gap-3 px-6 py-3 bg-blue-600 text-white rounded-full font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-600/20"
                   >
                     <Download className="w-4 h-4" />
                     <span>Exportar</span>
-                  </motion.button>
+                  </button>
                 </div>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-slate-50/50">
+                    <tr className="bg-slate-50/30">
                       <th className="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Estudiante</th>
                       <th className="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Institución</th>
                       <th className="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Carrera</th>
                       <th className="px-8 py-5 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Acción</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-white/40">
                     {registrations.map((r, i) => (
-                      <tr key={r.id} className="hover:bg-slate-50/50 transition-colors group">
+                      <tr key={r.id} className="hover:bg-white/60 transition-colors group">
                         <td className="px-8 py-5">
                           <p className="font-black text-slate-900 text-sm">{r.full_name}</p>
                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{new Date(r.created_at).toLocaleDateString()}</p>
@@ -505,12 +453,12 @@ export default function DashboardPage() {
                           <span className="text-[11px] font-bold text-slate-500">{r.school_name || 'Particular'}</span>
                         </td>
                         <td className="px-8 py-5">
-                          <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg font-black text-[9px] uppercase tracking-widest border border-blue-100/30">
+                          <span className="px-3 py-1 bg-blue-50/50 backdrop-blur-sm text-blue-600 rounded-lg font-black text-[9px] uppercase tracking-widest border border-blue-100/30">
                             {r.career_name}
                           </span>
                         </td>
                         <td className="px-8 py-5 text-right">
-                          <button className="p-2 bg-slate-100 rounded-full hover:bg-blue-600 hover:text-white transition-all">
+                          <button className="p-2 bg-slate-100/50 rounded-full hover:bg-blue-600 hover:text-white transition-all">
                             <ChevronRight className="w-3 h-3" />
                           </button>
                         </td>
@@ -523,7 +471,6 @@ export default function DashboardPage() {
           )}
         </AnimatePresence>
       </main>
-
 
       <style jsx global>{`
         .custom-scrollbar::-webkit-scrollbar {
