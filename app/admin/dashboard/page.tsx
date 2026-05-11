@@ -334,22 +334,23 @@ export default function DashboardPage() {
                   </div>
                 </motion.div>
 
-                {/* Right: Modern Career Explorer */}
+                {/* Right: Podium & Grid Explorer (High Legibility) */}
                 <motion.div 
-                  className="lg:col-span-8 bg-slate-900/90 backdrop-blur-2xl border border-white/5 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 text-white flex flex-col h-[450px]"
+                  variants={{ hidden: { x: 20, opacity: 0 }, visible: { x: 0, opacity: 1 } }}
+                  className="lg:col-span-8 bg-slate-900/90 backdrop-blur-2xl border border-white/5 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 text-white flex flex-col min-h-[550px]"
                 >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-6">
                     <div>
-                      <h3 className="text-xl font-black tracking-tight text-white">Ranking de Interés</h3>
-                      <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">Demanda por especialidad</p>
+                      <h3 className="text-2xl font-black tracking-tight text-white">Demanda Académica</h3>
+                      <p className="text-white/40 text-xs font-bold uppercase tracking-widest mt-1">Tendencias y Preferencias</p>
                     </div>
-                    <div className="flex bg-white/5 p-1 rounded-xl overflow-x-auto max-w-full custom-scrollbar-white gap-1">
-                      {['Todos', 'Informática', 'Salud', 'Artes'].map((area) => (
+                    <div className="flex bg-white/5 p-1.5 rounded-2xl overflow-x-auto max-w-full custom-scrollbar-white gap-1">
+                      {['Todos', 'Informática', 'Salud', 'Artes', 'Turismo'].map((area) => (
                         <button 
                           key={area}
                           onClick={() => setSelectedArea(area)}
-                          className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
-                            selectedArea === area ? 'bg-white text-slate-900 shadow-xl' : 'text-white/40 hover:bg-white/5'
+                          className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                            selectedArea === area ? 'bg-white text-slate-900 shadow-xl scale-105' : 'text-white/40 hover:bg-white/5'
                           }`}
                         >
                           {area}
@@ -358,52 +359,73 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar-white space-y-4">
+                  <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar-white">
                     {chartData.length > 0 ? (
-                      chartData.map((career: any, index: number) => {
-                        const maxCount = Math.max(...chartData.map((c:any) => c.count));
-                        const percentage = (career.count / maxCount) * 100;
-                        
-                        return (
-                          <motion.div 
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.05 }}
-                            key={career.name} 
-                            className="group"
-                          >
-                            <div className="flex justify-between items-end mb-2">
-                              <div className="flex items-center gap-3">
-                                <span className="text-[10px] font-black text-white/20 w-5">#{index + 1}</span>
-                                <span className="text-xs font-bold text-white/80 group-hover:text-white transition-colors line-clamp-1">{career.name}</span>
+                      <div className="space-y-10">
+                        {/* Top 3 Podium Cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                          {chartData.slice(0, 3).map((career: any, i: number) => (
+                            <motion.div 
+                              key={career.name}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: i * 0.1 }}
+                              className={`relative p-6 rounded-[28px] border border-white/5 flex flex-col items-center text-center overflow-hidden group ${
+                                i === 0 ? 'bg-blue-600/20 border-blue-500/30' : 
+                                i === 1 ? 'bg-red-600/20 border-red-500/30' : 'bg-white/5'
+                              }`}
+                            >
+                              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 font-black text-xl ${
+                                i === 0 ? 'bg-blue-600 text-white' : 
+                                i === 1 ? 'bg-red-600 text-white' : 'bg-white/10 text-white/40'
+                              }`}>
+                                {i + 1}
                               </div>
-                              <span className="text-[10px] font-black text-blue-400">{career.count} <span className="text-white/20 ml-1 italic">Votos</span></span>
-                            </div>
-                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                              <h4 className="text-sm font-black text-white mb-2 line-clamp-2 min-h-[40px] leading-tight">{career.name}</h4>
+                              <p className="text-2xl font-black text-white/90">{career.count}</p>
+                              <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest">Registros</p>
+                              
+                              {/* Decorative bg icon */}
+                              <div className="absolute -bottom-4 -right-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                <GraduationCap className="w-20 h-20" />
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+
+                        {/* Grid for the rest */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {chartData.slice(3, 15).map((career: any, i: number) => {
+                            const maxCount = Math.max(...chartData.map((c:any) => c.count));
+                            const percentage = (career.count / maxCount) * 100;
+                            return (
                               <motion.div 
-                                initial={{ width: 0 }}
-                                animate={{ width: `${percentage}%` }}
-                                transition={{ duration: 1, ease: "easeOut" }}
-                                className={`h-full rounded-full ${index % 2 === 0 ? 'bg-gradient-to-r from-blue-600 to-blue-400' : 'bg-gradient-to-r from-red-600 to-red-400'}`}
-                              />
-                            </div>
-                          </motion.div>
-                        );
-                      })
+                                key={career.name}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="bg-white/5 p-4 rounded-2xl border border-white/5 flex items-center justify-between group hover:bg-white/10 transition-all cursor-default"
+                              >
+                                <div className="flex-1 mr-4">
+                                  <p className="text-[11px] font-bold text-white/70 group-hover:text-white transition-colors mb-2 line-clamp-1">{career.name}</p>
+                                  <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                                    <div 
+                                      className={`h-full rounded-full ${i % 2 === 0 ? 'bg-blue-500' : 'bg-red-500'}`} 
+                                      style={{ width: `${percentage}%` }}
+                                    />
+                                  </div>
+                                </div>
+                                <span className="text-xs font-black text-white/40 group-hover:text-white/90">{career.count}</span>
+                              </motion.div>
+                            );
+                          })}
+                        </div>
+                      </div>
                     ) : (
                       <div className="h-full flex flex-col items-center justify-center opacity-20">
-                        <BarChart3 className="w-12 h-12 mb-4" />
-                        <p className="text-[10px] font-black uppercase tracking-widest">Sin datos</p>
+                        <BarChart3 className="w-16 h-16 mb-4" />
+                        <p className="text-sm font-black uppercase tracking-widest">No hay registros aún</p>
                       </div>
                     )}
-                  </div>
-
-                  <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
-                    <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">Ranking dinámico</p>
-                    <div className="flex gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                    </div>
                   </div>
                 </motion.div>
               </div>
