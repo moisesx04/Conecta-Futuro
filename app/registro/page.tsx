@@ -21,6 +21,8 @@ export default function RegistroPage() {
     motivation: '',
   })
 
+  const [error, setError] = useState<string | null>(null)
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -28,8 +30,18 @@ export default function RegistroPage() {
           fetch('/api/schools'),
           fetch('/api/careers'),
         ])
-        if (sr.ok) setSchools(await sr.json())
-        if (cr.ok) setCareers(await cr.json())
+        
+        const sData = await sr.json()
+        const cData = await cr.json()
+
+        if (sr.ok) setSchools(sData)
+        else setError(sData.details || sData.error)
+
+        if (cr.ok) setCareers(cData)
+        else if (!error) setError(cData.details || cData.error)
+
+      } catch (err: any) {
+        setError(err.message)
       } finally {
         setLoading(false)
       }
@@ -120,6 +132,14 @@ export default function RegistroPage() {
             ))}
           </div>
         </div>
+        
+        {error && (
+          <div className="mb-8 p-6 bg-red-50 border-2 border-red-100 rounded-[32px] text-red-600 text-sm font-bold shadow-xl shadow-red-600/5">
+            <p className="uppercase tracking-widest text-[10px] mb-2 opacity-60">Error de Base de Datos:</p>
+            <p className="leading-tight">{error}</p>
+            <p className="mt-3 text-[11px] font-black uppercase tracking-tighter text-red-400">Verifica la variable DATABASE_URL en Vercel y haz un Redeploy</p>
+          </div>
+        )}
 
         <AnimatePresence mode="wait">
           {step === 0 && (
