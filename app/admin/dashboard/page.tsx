@@ -301,7 +301,7 @@ export default function DashboardPage() {
                         ]}
                       >
                         <XAxis dataKey="name" tick={{fontSize: 10, fontWeight: 800}} axisLine={false} tickLine={false} />
-                        <Tooltip content={<CustomTooltip />} />
+                        <RechartsTooltip content={<CustomTooltip />} />
                         <Bar dataKey="count" radius={[10, 10, 0, 0]} fill="#2563eb">
                           <Cell fill="#3b82f6" />
                           <Cell fill="#ef4444" />
