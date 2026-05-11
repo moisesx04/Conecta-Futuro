@@ -37,11 +37,18 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'stats' | 'list'>('stats')
   const [loading, setLoading] = useState(true)
   const [copySuccess, setCopySuccess] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [selectedArea, setSelectedArea] = useState('Todos')
   const router = useRouter()
 
-  // Prepare data for the chart
-  const chartData = stats?.by_career?.sort((a: any, b: any) => b.count - a.count) || []
+  // Filter data based on selected area
+  const chartData = stats?.by_career?.filter((c: any) => {
+    if (selectedArea === 'Todos') return true;
+    if (selectedArea === 'Informática') return c.name.match(/Software|Redes|Soporte|Videojuegos/i);
+    if (selectedArea === 'Salud') return c.name.match(/Enfermería|Imagen|Dental/i);
+    if (selectedArea === 'Artes') return c.name.match(/Diseño|Fotografía|Eventos/i);
+    if (selectedArea === 'Turismo') return c.name.match(/Cocina|Panadería|Gestión/i);
+    return true;
+  }).sort((a: any, b: any) => b.count - a.count) || []
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token')
@@ -267,228 +274,207 @@ export default function DashboardPage() {
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-transparent to-slate-50 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </motion.div>
                 ))}
-              </div>                {/* Bento Grid Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-[800px]">
-                  
-                  {/* Carrera Ranking - Big Bento Box */}
-                  <motion.div 
-                    variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
-                    className="lg:col-span-8 bg-white/80 backdrop-blur-xl rounded-[40px] border border-white shadow-[0_20px_50px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col group"
-                  >
-                    <div className="p-8 pb-4 flex items-center justify-between">
-                      <div>
-                        <h3 className="text-2xl font-black text-slate-900 tracking-tight">Demanda por Carrera</h3>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Ranking de Interés Estudiantil</p>
-                      </div>
-                      <div className="px-4 py-2 bg-blue-600/10 text-blue-600 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-blue-600/5">
-                        {stats?.by_career?.length || 0} Especialidades
-                      </div>
+              </div>
+
+              {/* Area Distribution and Detail Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-[600px]">
+                
+                {/* Left: Overall Area Distribution (Pie Chart) */}
+                <motion.div 
+                  variants={{ hidden: { x: -20, opacity: 0 }, visible: { x: 0, opacity: 1 } }}
+                  className="lg:col-span-4 bg-white rounded-[40px] border border-slate-100 shadow-sm p-8 flex flex-col"
+                >
+                  <div className="mb-6">
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight">Distribución por Área</h3>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Visión Global</p>
+                  </div>
+                  <div className="flex-1 min-h-0">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart 
+                        data={[
+                          { name: 'Artes', count: stats?.by_career?.filter((c: any) => c.name.match(/Diseño|Fotografía|Eventos/i)).reduce((a:any,b:any)=>a+b.count,0) },
+                          { name: 'Salud', count: stats?.by_career?.filter((c: any) => c.name.match(/Enfermería|Imagen|Dental/i)).reduce((a:any,b:any)=>a+b.count,0) },
+                          { name: 'Info', count: stats?.by_career?.filter((c: any) => c.name.match(/Software|Redes|Soporte|Videojuegos/i)).reduce((a:any,b:any)=>a+b.count,0) },
+                          { name: 'Indus', count: stats?.by_career?.filter((c: any) => c.name.match(/Manufactura|Logística|Dirección/i)).reduce((a:any,b:any)=>a+b.count,0) },
+                          { name: 'Turis', count: stats?.by_career?.filter((c: any) => c.name.match(/Cocina|Panadería|Gestión/i)).reduce((a:any,b:any)=>a+b.count,0) },
+                        ]}
+                      >
+                        <XAxis dataKey="name" tick={{fontSize: 10, fontWeight: 800}} axisLine={false} tickLine={false} />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Bar dataKey="count" radius={[10, 10, 0, 0]} fill="#2563eb">
+                          <Cell fill="#3b82f6" />
+                          <Cell fill="#ef4444" />
+                          <Cell fill="#10b981" />
+                          <Cell fill="#f59e0b" />
+                          <Cell fill="#8b5cf6" />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </motion.div>
+
+                {/* Right: Detailed Area Explorer */}
+                <motion.div 
+                  variants={{ hidden: { x: 20, opacity: 0 }, visible: { x: 0, opacity: 1 } }}
+                  className="lg:col-span-8 bg-slate-900 rounded-[40px] p-8 text-white flex flex-col overflow-hidden"
+                >
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+                    <div>
+                      <h3 className="text-2xl font-black tracking-tight">Explorador de Carreras</h3>
+                      <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">Selecciona un área para ver detalles</p>
                     </div>
-
-                    {/* Scrollable Chart Container */}
-                    <div className="flex-1 overflow-y-auto custom-scrollbar px-4 pb-8">
-                      <div style={{ height: Math.max(stats?.by_career?.length * 45, 400) }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart
-                            layout="vertical"
-                            data={chartData}
-                            margin={{ top: 0, right: 40, left: 20, bottom: 0 }}
-                          >
-                            <defs>
-                              <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stopColor="#2563eb" />
-                                <stop offset="100%" stopColor="#ef4444" />
-                              </linearGradient>
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                            <XAxis type="number" hide />
-                            <YAxis 
-                              dataKey="name" 
-                              type="category" 
-                              width={160} 
-                              tick={{ fontSize: 9, fontWeight: 800, fill: '#64748b' }}
-                              axisLine={false}
-                              tickLine={false}
-                            />
-                            <RechartsTooltip cursor={{ fill: '#f8fafc', radius: 10 }} content={<CustomTooltip />} />
-                            <Bar 
-                              dataKey="count" 
-                              radius={[0, 10, 10, 0]} 
-                              barSize={20}
-                              animationDuration={1500}
-                            >
-                              {chartData.map((entry: any, index: number) => (
-                                <Cell key={`cell-${index}`} fill="url(#barGradient)" />
-                              ))}
-                            </Bar>
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  {/* Right Column Bento Box - Schools */}
-                  <div className="lg:col-span-4 flex flex-col gap-8">
-                    {/* Top Schools Box */}
-                    <motion.div 
-                      variants={{ hidden: { x: 20, opacity: 0 }, visible: { x: 0, opacity: 1 } }}
-                      className="flex-1 bg-white/80 backdrop-blur-xl rounded-[40px] border border-white shadow-[0_20px_50px_rgba(0,0,0,0.04)] p-8 overflow-hidden flex flex-col"
-                    >
-                      <div className="mb-8">
-                        <h3 className="text-xl font-black text-slate-900 tracking-tight">Top Instituciones</h3>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Centros con más impacto</p>
-                      </div>
-
-                      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-6 pr-2">
-                        {stats?.by_school?.sort((a: any, b: any) => b.count - a.count).map((s: any, i: number) => (
-                          <div key={i} className="relative group">
-                            <div className="flex justify-between items-end mb-2">
-                              <span className="text-[11px] font-black text-slate-500 uppercase tracking-tight line-clamp-1 pr-4">{s.name}</span>
-                              <span className="text-sm font-black text-blue-600">{s.count}</span>
-                            </div>
-                            <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                              <motion.div 
-                                initial={{ width: 0 }}
-                                animate={{ width: `${(s.count / (stats?.total_registrations || 1)) * 100}%` }}
-                                className="h-full bg-gradient-to-r from-blue-600 to-red-600 rounded-full"
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </motion.div>
-
-                    {/* Quick Stats Mini Box */}
-                    <motion.div 
-                      variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
-                      className="bg-blue-900 rounded-[40px] p-8 text-white relative overflow-hidden group"
-                    >
-                      <div className="relative z-10">
-                        <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-4">Estado del Sistema</p>
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md">
-                            <ShieldCheck className="w-6 h-6 text-emerald-400" />
-                          </div>
-                          <div>
-                            <p className="text-xl font-black">Conexión Activa</p>
-                            <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">Base de Datos OK</p>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Decorative elements */}
-                      <div className="absolute top-[-20%] right-[-10%] w-32 h-32 bg-red-500/20 rounded-full blur-3xl group-hover:bg-red-500/30 transition-all" />
-                    </motion.div>
-                  </div>
-
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div 
-                key="list"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-white/80 backdrop-blur-xl rounded-[48px] border border-white shadow-[0_20px_50px_rgba(0,0,0,0.04)] overflow-hidden"
-              >
-                <div className="p-10 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
-                  <div>
-                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">Listado de Registros</h3>
-                    <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Base de datos en tiempo real</p>
-                  </div>
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
-                    <motion.button 
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => {
-                        if (!registrations.length) return
-                        const headers = ['Estudiante', 'Institución', 'Carrera', 'Fecha'];
-                        const csvContent = [
-                          headers.join(','),
-                          ...registrations.map((r: any) => [
-                            `"${r.full_name}"`,
-                            `"${r.school_name}"`,
-                            `"${r.career_name}"`,
-                            new Date(r.created_at).toLocaleDateString()
-                          ].join(','))
-                        ].join('\n');
-                        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                        const link = document.createElement('a');
-                        link.href = URL.createObjectURL(blob);
-                        link.download = `conecta_futuro_${new Date().toISOString().split('T')[0]}.csv`;
-                        link.click();
-                      }}
-                      className="flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 hover:bg-black text-white rounded-full font-black text-xs transition-all shadow-xl shadow-slate-900/20 border-t border-white/10 uppercase tracking-widest"
-                    >
-                      <Download className="w-4 h-4" />
-                      <span>Exportar CSV</span>
-                    </motion.button>
-                  </div>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-slate-50/50">
-                        <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Estudiante</th>
-                        <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Institución</th>
-                        <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Carrera Técnica</th>
-                        <th className="px-10 py-6 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Acción</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {registrations.map((r, i) => (
-                        <motion.tr 
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: i * 0.05 }}
-                          key={r.id} 
-                          className="hover:bg-blue-50/30 transition-colors group"
+                    <div className="flex bg-white/10 p-1 rounded-2xl overflow-x-auto max-w-full custom-scrollbar-white">
+                      {['Todos', 'Informática', 'Salud', 'Artes', 'Turismo'].map((area) => (
+                        <button 
+                          key={area}
+                          onClick={() => setSelectedArea(area)}
+                          className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                            selectedArea === area ? 'bg-white text-blue-900 shadow-lg' : 'hover:bg-white/10 text-white/60'
+                          }`}
                         >
-                          <td className="px-10 py-7">
-                            <p className="font-black text-slate-900 group-hover:text-blue-600 transition-colors">{r.full_name}</p>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">{new Date(r.created_at).toLocaleDateString()}</p>
-                          </td>
-                          <td className="px-10 py-7">
-                            <span className="text-xs font-bold text-slate-500">{r.school_name || 'Particular'}</span>
-                          </td>
-                          <td className="px-10 py-7">
-                            <span className="px-4 py-2 bg-slate-50 text-slate-600 rounded-xl font-black text-[10px] border border-slate-100 uppercase tracking-widest group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all">
-                              {r.career_name}
-                            </span>
-                          </td>
-                          <td className="px-10 py-7 text-right">
-                            <motion.button 
-                              whileHover={{ scale: 1.1, x: 2 }}
-                              whileTap={{ scale: 0.9 }}
-                              className="p-3 bg-slate-100 text-slate-400 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-sm"
-                            >
-                              <ChevronRight className="w-4 h-4" />
-                            </motion.button>
-                          </td>
-                        </motion.tr>
+                          {area}
+                        </button>
                       ))}
-                    </tbody>
-                  </table>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 min-h-0">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        layout="vertical"
+                        data={chartData.slice(0, 8)}
+                        margin={{ left: 20, right: 40 }}
+                      >
+                        <XAxis type="number" hide />
+                        <YAxis 
+                          dataKey="name" 
+                          type="category" 
+                          width={140} 
+                          tick={{ fontSize: 9, fontWeight: 700, fill: '#94a3b8' }}
+                          axisLine={false}
+                          tickLine={false}
+                        />
+                        <RechartsTooltip cursor={{ fill: 'rgba(255,255,255,0.05)', radius: 10 }} content={<CustomTooltip />} />
+                        <Bar 
+                          dataKey="count" 
+                          radius={[0, 10, 10, 0]} 
+                          barSize={24}
+                        >
+                          {chartData.map((entry: any, index: number) => (
+                            <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#3b82f6' : '#ef4444'} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-center">
+                    <p className="text-white/30 text-[9px] font-black uppercase tracking-[0.2em]">Mostrando top carreras con más interés</p>
+                    <button className="text-[10px] font-black text-blue-400 hover:text-white transition-colors uppercase tracking-widest">Ver Listado Completo</button>
+                  </div>
+                </motion.div>
+
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="list"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-[48px] border border-slate-100 shadow-sm overflow-hidden"
+            >
+              <div className="p-10 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                <div>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">Base de Datos</h3>
+                  <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Registros en tiempo real</p>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </main>
- 
-       <style jsx global>{`
-         .custom-scrollbar::-webkit-scrollbar {
-           width: 6px;
-         }
-         .custom-scrollbar::-webkit-scrollbar-track {
-           background: transparent;
-         }
-         .custom-scrollbar::-webkit-scrollbar-thumb {
-           background: #e2e8f0;
-           border-radius: 10px;
-         }
-         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-           background: #cbd5e1;
-         }
-       `}</style>
-     </div>
-   )
- }
+                <div className="flex items-center gap-4">
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    onClick={() => {
+                      if (!registrations.length) return
+                      const headers = ['Estudiante', 'Institución', 'Carrera', 'Fecha'];
+                      const csvContent = [
+                        headers.join(','),
+                        ...registrations.map((r: any) => [
+                          `"${r.full_name}"`,
+                          `"${r.school_name}"`,
+                          `"${r.career_name}"`,
+                          new Date(r.created_at).toLocaleDateString()
+                        ].join(','))
+                      ].join('\n');
+                      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                      const link = document.createElement('a');
+                      link.href = URL.createObjectURL(blob);
+                      link.download = `conecta_futuro_${new Date().toISOString().split('T')[0]}.csv`;
+                      link.click();
+                    }}
+                    className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-full font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-600/20"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Descargar CSV</span>
+                  </motion.button>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-slate-50/50">
+                      <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Estudiante</th>
+                      <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Institución</th>
+                      <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Carrera</th>
+                      <th className="px-10 py-6 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {registrations.map((r, i) => (
+                      <tr key={r.id} className="hover:bg-slate-50/50 transition-colors group">
+                        <td className="px-10 py-6">
+                          <p className="font-black text-slate-900">{r.full_name}</p>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{new Date(r.created_at).toLocaleDateString()}</p>
+                        </td>
+                        <td className="px-10 py-6">
+                          <span className="text-xs font-bold text-slate-500">{r.school_name || 'Particular'}</span>
+                        </td>
+                        <td className="px-10 py-6">
+                          <span className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg font-black text-[9px] uppercase tracking-widest">
+                            {r.career_name}
+                          </span>
+                        </td>
+                        <td className="px-10 py-6 text-right">
+                          <button className="p-2 bg-slate-100 rounded-full hover:bg-blue-600 hover:text-white transition-all">
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #e2e8f0;
+          border-radius: 10px;
+        }
+        .custom-scrollbar-white::-webkit-scrollbar {
+          height: 4px;
+        }
+        .custom-scrollbar-white::-webkit-scrollbar-thumb {
+          background: rgba(255,255,255,0.2);
+          border-radius: 10px;
+        }
+      `}</style>
+    </div>
+  )
+}
