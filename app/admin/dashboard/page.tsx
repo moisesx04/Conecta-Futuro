@@ -350,8 +350,8 @@ export default function DashboardPage() {
                 >
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
                     <div>
-                      <h3 className="text-xl font-black tracking-tight text-white">Interés por Carrera</h3>
-                      <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">Filtrar por Especialidad</p>
+                      <h3 className="text-xl font-black tracking-tight text-white">Ranking de Interés</h3>
+                      <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">Demanda por especialidad</p>
                     </div>
                     <div className="flex bg-white/5 p-1 rounded-xl overflow-x-auto max-w-full custom-scrollbar-white gap-1">
                       {['Todos', 'Informática', 'Salud', 'Artes'].map((area) => (
@@ -368,34 +368,52 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  <div className="flex-1 min-h-0">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        layout="vertical"
-                        data={chartData.slice(0, 8)}
-                        margin={{ left: 10, right: 30, top: 0, bottom: 0 }}
-                      >
-                        <XAxis type="number" hide />
-                        <YAxis 
-                          dataKey="name" 
-                          type="category" 
-                          width={140} 
-                          tick={{ fontSize: 9, fontWeight: 700, fill: '#94a3b8' }}
-                          axisLine={false}
-                          tickLine={false}
-                        />
-                        <RechartsTooltip cursor={{ fill: 'rgba(255,255,255,0.05)', radius: 10 }} content={<CustomTooltip />} />
-                        <Bar 
-                          dataKey="count" 
-                          radius={[0, 10, 10, 0]} 
-                          barSize={16}
-                        >
-                          {chartData.map((entry: any, index: number) => (
-                            <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#3b82f6' : '#ef4444'} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
+                  <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar-white space-y-4">
+                    {chartData.length > 0 ? (
+                      chartData.map((career: any, index: number) => {
+                        const maxCount = Math.max(...chartData.map((c:any) => c.count));
+                        const percentage = (career.count / maxCount) * 100;
+                        
+                        return (
+                          <motion.div 
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            key={career.name} 
+                            className="group"
+                          >
+                            <div className="flex justify-between items-end mb-2">
+                              <div className="flex items-center gap-3">
+                                <span className="text-[10px] font-black text-white/20 w-5">#{index + 1}</span>
+                                <span className="text-xs font-bold text-white/80 group-hover:text-white transition-colors line-clamp-1">{career.name}</span>
+                              </div>
+                              <span className="text-[10px] font-black text-blue-400">{career.count} <span className="text-white/20 ml-1 italic">Votos</span></span>
+                            </div>
+                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                              <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: `${percentage}%` }}
+                                transition={{ duration: 1, ease: "easeOut" }}
+                                className={`h-full rounded-full ${index % 2 === 0 ? 'bg-gradient-to-r from-blue-600 to-blue-400' : 'bg-gradient-to-r from-red-600 to-red-400'}`}
+                              />
+                            </div>
+                          </motion.div>
+                        );
+                      })
+                    ) : (
+                      <div className="h-full flex flex-col items-center justify-center opacity-20">
+                        <BarChart3 className="w-12 h-12 mb-4" />
+                        <p className="text-[10px] font-black uppercase tracking-widest">Sin datos</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
+                    <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">Ranking dinámico</p>
+                    <div className="flex gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                    </div>
                   </div>
                 </motion.div>
               </div>
