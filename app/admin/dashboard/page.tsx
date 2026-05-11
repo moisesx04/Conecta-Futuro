@@ -41,17 +41,18 @@ export default function DashboardPage() {
   const [selectedArea, setSelectedArea] = useState('Todos')
   const router = useRouter()
 
-  // Prepare data for the charts
-  const chartData = stats?.by_career?.filter((c: any) => {
+  // Prepare data for the charts with safety checks
+  const chartData = (stats?.by_career || []).filter((c: any) => {
+    if (!c || !c.name) return false;
     if (selectedArea === 'Todos') return true;
     if (selectedArea === 'Informática') return c.name.match(/Software|Redes|Soporte|Videojuegos/i);
     if (selectedArea === 'Salud') return c.name.match(/Enfermería|Imagen|Dental/i);
     if (selectedArea === 'Artes') return c.name.match(/Diseño|Fotografía|Eventos/i);
     if (selectedArea === 'Turismo') return c.name.match(/Cocina|Panadería|Gestión/i);
     return true;
-  }).sort((a: any, b: any) => b.count - a.count) || []
+  }).sort((a: any, b: any) => (b.count || 0) - (a.count || 0))
 
-  const schoolData = stats?.by_school?.sort((a: any, b: any) => b.count - a.count) || []
+  const schoolData = (stats?.by_school || []).sort((a: any, b: any) => (b.count || 0) - (a.count || 0))
   
   // Real activity data from database
   const activityData = stats?.activity || [
