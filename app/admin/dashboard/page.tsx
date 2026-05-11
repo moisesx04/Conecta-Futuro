@@ -9,6 +9,28 @@ import {
   Copy, ExternalLink, ShieldCheck, Menu, X
 } from 'lucide-react'
 
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
+  Tooltip as RechartsTooltip, ResponsiveContainer, Cell 
+} from 'recharts'
+
+// Custom Tooltip for the chart
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-slate-800 backdrop-blur-md">
+        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Carrera</p>
+        <p className="text-sm font-bold mb-2">{payload[0].payload.name}</p>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+          <p className="text-lg font-black text-blue-400">{payload[0].value} <span className="text-[10px] text-slate-500">Interesados</span></p>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null)
   const [registrations, setRegistrations] = useState<any[]>([])
@@ -17,6 +39,9 @@ export default function DashboardPage() {
   const [copySuccess, setCopySuccess] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const router = useRouter()
+
+  // Prepare data for the chart
+  const chartData = stats?.by_career?.sort((a: any, b: any) => b.count - a.count) || []
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token')
@@ -265,36 +290,44 @@ export default function DashboardPage() {
                     <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest px-6">Ranking de Demanda</p>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto px-10 pb-10 custom-scrollbar space-y-6">
-                    {stats?.by_career?.sort((a: any, b: any) => b.count - a.count).map((c: any, i: number) => (
-                      <motion.div 
-                        key={i} 
-                        className="group relative"
-                        whileHover={{ x: 5 }}
+                  <div className="flex-1 h-full min-h-0 pt-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        layout="vertical"
+                        data={chartData}
+                        margin={{ top: 0, right: 30, left: 20, bottom: 0 }}
                       >
-                        <div className="flex items-center justify-between mb-2 px-1">
-                          <span className="font-bold text-slate-600 group-hover:text-blue-600 transition-colors text-sm line-clamp-1 flex-1 pr-4">{c.name}</span>
-                          <span className="font-black text-slate-900 bg-slate-50 px-3 py-1 rounded-lg text-xs">{c.count}</span>
-                        </div>
-                        <div className="h-3 bg-slate-50 rounded-full overflow-hidden p-0.5 relative">
-                          <motion.div 
-                            initial={{ width: 0 }} 
-                            animate={{ width: `${(c.count / (stats?.total_registrations || 1)) * 100}%` }} 
-                            transition={{ type: "spring", bounce: 0.3, duration: 1.5, delay: 0.1 + (i * 0.05) }}
-                            className="h-full bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.2)]" 
-                          />
-
-                          {/* Tooltip on Hover */}
-                          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-4 py-2 bg-slate-900 text-white text-[10px] font-bold rounded-xl whitespace-nowrap shadow-2xl">
-                              <p className="opacity-60 uppercase tracking-tighter mb-0.5">{c.name}</p>
-                              <p className="text-sm font-black text-blue-400">{c.count} Interesados</p>
-                              <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900" />
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                        <XAxis type="number" hide />
+                        <YAxis 
+                          dataKey="name" 
+                          type="category" 
+                          width={120} 
+                          tick={{ fontSize: 9, fontWeight: 700, fill: '#64748b' }}
+                          axisLine={false}
+                          tickLine={false}
+                        />
+                        <RechartsTooltip cursor={{ fill: '#f8fafc' }} content={<CustomTooltip />} />
+                        <Bar 
+                          dataKey="count" 
+                          radius={[0, 10, 10, 0]} 
+                          barSize={20}
+                        >
+                          {chartData.map((entry: any, index: number) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={`url(#colorBar)`}
+                            />
+                          ))}
+                        </Bar>
+                        <defs>
+                          <linearGradient id="colorBar" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor="#2563eb" />
+                            <stop offset="100%" stopColor="#6366f1" />
+                          </linearGradient>
+                        </defs>
+                      </BarChart>
+                    </ResponsiveContainer>
                   </div>
                 </motion.div>
 
