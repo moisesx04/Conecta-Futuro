@@ -11,19 +11,19 @@ import {
 
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, 
-  Tooltip as RechartsTooltip, ResponsiveContainer, Cell 
+  Tooltip as RechartsTooltip, ResponsiveContainer, Cell,
+  AreaChart, Area, PieChart, Pie, LineChart, Line
 } from 'recharts'
 
 // Custom Tooltip for the chart
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-slate-800 backdrop-blur-md">
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Carrera</p>
-        <p className="text-sm font-bold mb-2">{payload[0].payload.name}</p>
+      <div className="bg-slate-900/90 text-white p-4 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-xl">
+        <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">{payload[0].payload.name}</p>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-          <p className="text-lg font-black text-blue-400">{payload[0].value} <span className="text-[10px] text-slate-500">Interesados</span></p>
+          <p className="text-lg font-black text-blue-400">{payload[0].value} <span className="text-[10px] text-white/20">Registros</span></p>
         </div>
       </div>
     );
@@ -41,7 +41,7 @@ export default function DashboardPage() {
   const [selectedArea, setSelectedArea] = useState('Todos')
   const router = useRouter()
 
-  // Filter data based on selected area
+  // Prepare data for the charts
   const chartData = stats?.by_career?.filter((c: any) => {
     if (selectedArea === 'Todos') return true;
     if (selectedArea === 'Informática') return c.name.match(/Software|Redes|Soporte|Videojuegos/i);
@@ -50,6 +50,15 @@ export default function DashboardPage() {
     if (selectedArea === 'Turismo') return c.name.match(/Cocina|Panadería|Gestión/i);
     return true;
   }).sort((a: any, b: any) => b.count - a.count) || []
+
+  const schoolData = stats?.by_school?.sort((a: any, b: any) => b.count - a.count) || []
+  
+  // Mock activity data for the line chart (real systems would fetch this)
+  const activityData = [
+    { name: 'Lun', val: 2 }, { name: 'Mar', val: 5 }, { name: 'Mie', val: 3 },
+    { name: 'Jue', val: 8 }, { name: 'Vie', val: 12 }, { name: 'Sab', val: 7 }, { name: 'Dom', val: 4 }
+  ]
+
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token')
@@ -277,59 +286,109 @@ export default function DashboardPage() {
                 ))}
               </div>
 
-              {/* Area Distribution and Detail Section */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-[500px]">
+              {/* Row 1: Activity Line Chart (Wide) */}
+              <motion.div 
+                variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
+                className="bg-white rounded-[32px] border border-slate-100 shadow-sm p-8 flex flex-col mb-8 h-[350px]"
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight">Actividad de Registro</h3>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Tendencia de los últimos 7 días</p>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-blue-600" />
+                      <span className="text-[10px] font-black text-slate-400 uppercase">Inscritos</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-1 min-h-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={activityData}>
+                      <defs>
+                        <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#2563eb" stopOpacity={0.1}/>
+                          <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} dy={10} />
+                      <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} />
+                      <RechartsTooltip content={<CustomTooltip />} />
+                      <Area type="monotone" dataKey="val" stroke="#2563eb" strokeWidth={4} fillOpacity={1} fill="url(#colorVal)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </motion.div>
+
+              {/* Row 2: Two Column Widgets */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
-                {/* Left: Overall Area Distribution (Bar Chart) */}
+                {/* Left: Institution Donut Chart */}
                 <motion.div 
                   variants={{ hidden: { x: -20, opacity: 0 }, visible: { x: 0, opacity: 1 } }}
-                  className="lg:col-span-4 bg-white rounded-[32px] border border-slate-100 shadow-sm p-6 flex flex-col"
+                  className="lg:col-span-4 bg-white rounded-[32px] border border-slate-100 shadow-sm p-8 flex flex-col h-[450px]"
                 >
-                  <div className="mb-6">
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight">Distribución por Área</h3>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Interés General</p>
+                  <div className="mb-8">
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight">Top Instituciones</h3>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Proporción por Centro</p>
                   </div>
-                  <div className="flex-1 min-h-[300px]">
+                  <div className="flex-1 min-h-0 relative">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart 
-                        data={[
-                          { name: 'Artes', count: stats?.by_career?.filter((c: any) => c.name.match(/Diseño|Fotografía|Eventos/i)).reduce((a:any,b:any)=>a+b.count,0) },
-                          { name: 'Salud', count: stats?.by_career?.filter((c: any) => c.name.match(/Enfermería|Imagen|Dental/i)).reduce((a:any,b:any)=>a+b.count,0) },
-                          { name: 'IT', count: stats?.by_career?.filter((c: any) => c.name.match(/Software|Redes|Soporte|Videojuegos/i)).reduce((a:any,b:any)=>a+b.count,0) },
-                          { name: 'Indus', count: stats?.by_career?.filter((c: any) => c.name.match(/Manufactura|Logística|Dirección/i)).reduce((a:any,b:any)=>a+b.count,0) },
-                          { name: 'Turis', count: stats?.by_career?.filter((c: any) => c.name.match(/Cocina|Panadería|Gestión/i)).reduce((a:any,b:any)=>a+b.count,0) },
-                        ]}
-                        margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-                      >
-                        <XAxis dataKey="name" tick={{fontSize: 9, fontWeight: 800, fill: '#94a3b8'}} axisLine={false} tickLine={false} />
-                        <RechartsTooltip content={<CustomTooltip />} />
-                        <Bar dataKey="count" radius={[8, 8, 0, 0]} barSize={35}>
-                          { [0,1,2,3,4].map((i) => (
-                            <Cell key={i} fill={i % 2 === 0 ? '#2563eb' : '#ef4444'} />
+                      <PieChart>
+                        <Pie
+                          data={schoolData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={80}
+                          paddingAngle={5}
+                          dataKey="count"
+                          animationDuration={1500}
+                        >
+                          {schoolData.map((entry: any, index: number) => (
+                            <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#2563eb' : '#ef4444'} />
                           ))}
-                        </Bar>
-                      </BarChart>
+                        </Pie>
+                        <RechartsTooltip content={<CustomTooltip />} />
+                      </PieChart>
                     </ResponsiveContainer>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <p className="text-2xl font-black text-slate-900 leading-none">{stats?.total_registrations || 0}</p>
+                      <p className="text-[8px] font-black text-slate-400 uppercase mt-1">Total</p>
+                    </div>
+                  </div>
+                  <div className="mt-6 space-y-3">
+                    {schoolData.slice(0, 3).map((s: any, i: number) => (
+                      <div key={i} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${i % 2 === 0 ? 'bg-blue-600' : 'bg-red-600'}`} />
+                          <span className="text-[10px] font-bold text-slate-500 line-clamp-1 max-w-[120px]">{s.name}</span>
+                        </div>
+                        <span className="text-[10px] font-black text-slate-900">{s.count}</span>
+                      </div>
+                    ))}
                   </div>
                 </motion.div>
 
-                {/* Right: Detailed Area Explorer */}
+                {/* Right: Modern Career Explorer */}
                 <motion.div 
                   variants={{ hidden: { x: 20, opacity: 0 }, visible: { x: 0, opacity: 1 } }}
-                  className="lg:col-span-8 bg-slate-900 rounded-[32px] p-6 text-white flex flex-col overflow-hidden"
+                  className="lg:col-span-8 bg-slate-900 rounded-[32px] p-8 text-white flex flex-col h-[450px]"
                 >
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
                     <div>
-                      <h3 className="text-2xl font-black tracking-tight">Explorador de Carreras</h3>
-                      <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">Selecciona una categoría</p>
+                      <h3 className="text-xl font-black tracking-tight">Interés por Carrera</h3>
+                      <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">Filtrar por Especialidad</p>
                     </div>
-                    <div className="flex bg-white/10 p-1.5 rounded-2xl overflow-x-auto max-w-full custom-scrollbar-white gap-1">
-                      {['Todos', 'Informática', 'Salud', 'Artes', 'Turismo'].map((area) => (
+                    <div className="flex bg-white/5 p-1 rounded-xl overflow-x-auto max-w-full custom-scrollbar-white gap-1">
+                      {['Todos', 'Informática', 'Salud', 'Artes'].map((area) => (
                         <button 
                           key={area}
                           onClick={() => setSelectedArea(area)}
-                          className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
-                            selectedArea === area ? 'bg-white text-blue-900 shadow-lg scale-105' : 'hover:bg-white/10 text-white/50'
+                          className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
+                            selectedArea === area ? 'bg-white text-slate-900 shadow-xl' : 'text-white/40 hover:bg-white/5'
                           }`}
                         >
                           {area}
@@ -338,27 +397,27 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  <div className="flex-1 min-h-[350px]">
+                  <div className="flex-1 min-h-0">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         layout="vertical"
-                        data={chartData.slice(0, 10)}
-                        margin={{ left: 10, right: 40, top: 0, bottom: 0 }}
+                        data={chartData.slice(0, 8)}
+                        margin={{ left: 10, right: 30, top: 0, bottom: 0 }}
                       >
                         <XAxis type="number" hide />
                         <YAxis 
                           dataKey="name" 
                           type="category" 
-                          width={150} 
-                          tick={{ fontSize: 9, fontWeight: 700, fill: '#94a3b8' }}
+                          width={140} 
+                          tick={{ fontSize: 9, fontWeight: 700, fill: '#64748b' }}
                           axisLine={false}
                           tickLine={false}
                         />
-                        <RechartsTooltip cursor={{ fill: 'rgba(255,255,255,0.03)', radius: 10 }} content={<CustomTooltip />} />
+                        <RechartsTooltip cursor={{ fill: 'rgba(255,255,255,0.05)', radius: 10 }} content={<CustomTooltip />} />
                         <Bar 
                           dataKey="count" 
-                          radius={[0, 8, 8, 0]} 
-                          barSize={20}
+                          radius={[0, 10, 10, 0]} 
+                          barSize={16}
                         >
                           {chartData.map((entry: any, index: number) => (
                             <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#3b82f6' : '#ef4444'} />
@@ -368,11 +427,17 @@ export default function DashboardPage() {
                     </ResponsiveContainer>
                   </div>
                   <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
-                    <p className="text-white/20 text-[9px] font-black uppercase tracking-[0.2em]">Ranking dinámico actualizado</p>
-                    <div className="flex gap-2">
-                      <div className="w-2 h-2 rounded-full bg-blue-600" />
-                      <div className="w-2 h-2 rounded-full bg-red-600" />
+                    <div className="flex items-center gap-4">
+                       <div className="flex items-center gap-2">
+                         <div className="w-2 h-2 rounded-full bg-blue-500" />
+                         <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest">Masculino</span>
+                       </div>
+                       <div className="flex items-center gap-2">
+                         <div className="w-2 h-2 rounded-full bg-red-500" />
+                         <span className="text-[8px] font-bold text-white/30 uppercase tracking-widest">Femenino</span>
+                       </div>
                     </div>
+                    <button className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Ver Todo</button>
                   </div>
                 </motion.div>
 
@@ -458,6 +523,7 @@ export default function DashboardPage() {
           )}
         </AnimatePresence>
       </main>
+
 
       <style jsx global>{`
         .custom-scrollbar::-webkit-scrollbar {
