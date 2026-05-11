@@ -183,8 +183,8 @@ export default function DashboardPage() {
             className="flex items-center gap-3 bg-white/50 backdrop-blur-md p-2 rounded-full border border-white shadow-2xl shadow-slate-200/40 w-full md:w-auto"
           >
             <div className="px-5 py-3 bg-white/50 rounded-full hidden xl:block border border-white shadow-inner">
-              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Enlace</p>
-              <p className="text-xs font-bold text-blue-600 leading-none">/registro</p>
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5">Link Oficial</p>
+              <p className="text-xs font-bold text-blue-600">conecta-futuro.vercel.app</p>
             </div>
             <motion.button 
               whileHover={{ scale: 1.02, y: -2 }}
