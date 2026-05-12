@@ -63,12 +63,6 @@ export default function DashboardPage() {
 
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token')
-    if (!token) {
-      router.push('/admin/login')
-      return
-    }
-
     async function fetchData() {
       try {
         const [sr, rr] = await Promise.all([
@@ -82,12 +76,7 @@ export default function DashboardPage() {
       }
     }
     fetchData()
-  }, [router])
-
-  const handleLogout = () => {
-    localStorage.removeItem('admin_token')
-    router.push('/admin/login')
-  }
+  }, [])
 
   const handleCopyLink = async () => {
     const url = 'https://conecta-futuro-mu.vercel.app/registro'

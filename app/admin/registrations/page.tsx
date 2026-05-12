@@ -16,12 +16,6 @@ export default function RegistrationsPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token')
-    if (!token) {
-      router.push('/admin/login')
-      return
-    }
-
     async function fetchRegistrations() {
       try {
         const res = await fetch('/api/admin/registrations')
@@ -36,12 +30,7 @@ export default function RegistrationsPage() {
       }
     }
     fetchRegistrations()
-  }, [router])
-
-  const handleLogout = () => {
-    localStorage.removeItem('admin_token')
-    router.push('/admin/login')
-  }
+  }, [])
 
   const filteredRegistrations = registrations.filter(r => 
     r.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||

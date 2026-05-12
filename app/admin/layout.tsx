@@ -30,13 +30,17 @@ export default function AdminLayout({
   ]
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_token')
-    localStorage.removeItem('admin_session_start')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('admin_token')
+      localStorage.removeItem('admin_session_start')
+    }
     router.push('/admin/login')
   }
 
   useEffect(() => {
     const checkSession = () => {
+      if (typeof window === 'undefined') return
+      
       const token = localStorage.getItem('admin_token')
       const sessionStart = localStorage.getItem('admin_session_start')
       const currentTime = Date.now()
@@ -49,11 +53,16 @@ export default function AdminLayout({
       }
     }
     
-    checkSession()
-    // Optional: check every minute
-    const interval = setInterval(checkSession, 60000)
+    if (!isLoginPage) {
+      checkSession()
+    }
+    
+    const interval = setInterval(() => {
+      if (!isLoginPage) checkSession()
+    }, 60000)
+    
     return () => clearInterval(interval)
-  }, [pathname, router])
+  }, [pathname, router, isLoginPage])
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col lg:flex-row overflow-x-hidden font-sans relative">
