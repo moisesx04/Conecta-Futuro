@@ -17,29 +17,10 @@ export default function AdminLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
+  const [authorized, setAuthorized] = useState(false)
 
   // Don't show sidebar on login page
   const isLoginPage = pathname === '/admin/login'
-
-  if (isLoginPage) {
-    return <>{children}</>
-  }
-
-  const navItems = [
-    { id: 'stats', label: 'Resumen', icon: BarChart3, path: '/admin/dashboard' },
-    { id: 'list', label: 'Consulta de Registro', icon: List, path: '/admin/registrations' },
-  ]
-
-  const [authorized, setAuthorized] = useState(false)
-
-  const handleLogout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('admin_token')
-      localStorage.removeItem('admin_session_start')
-    }
-    setAuthorized(false)
-    router.push('/admin/login')
-  }
 
   useEffect(() => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null
@@ -51,13 +32,31 @@ export default function AdminLayout({
     }
   }, [pathname, router, isLoginPage])
 
-  if (!isLoginPage && !authorized) {
+  const handleLogout = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('admin_token')
+      localStorage.removeItem('admin_session_start')
+    }
+    setAuthorized(false)
+    router.push('/admin/login')
+  }
+
+  if (isLoginPage) {
+    return <>{children}</>
+  }
+
+  if (!authorized) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-blue-600 border-t-red-600 rounded-full animate-spin" />
       </div>
     )
   }
+
+  const navItems = [
+    { id: 'stats', label: 'Resumen', icon: BarChart3, path: '/admin/dashboard' },
+    { id: 'list', label: 'Consulta de Registro', icon: List, path: '/admin/registrations' },
+  ]
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col lg:flex-row overflow-x-hidden font-sans relative">
