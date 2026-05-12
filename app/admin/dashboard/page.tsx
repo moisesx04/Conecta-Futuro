@@ -53,7 +53,7 @@ export default function DashboardPage() {
     return true;
   }).sort((a: any, b: any) => (b.count || 0) - (a.count || 0))
 
-  const schoolData = (stats?.by_school || []).sort((a: any, b: any) => (b.count || 0) - (a.count || 0))
+  const schoolData = [...(stats?.by_school || [])].sort((a: any, b: any) => (b.count || 0) - (a.count || 0))
   
   // Real activity data from database
   const activityData = stats?.activity || [

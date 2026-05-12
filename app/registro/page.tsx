@@ -192,7 +192,7 @@ export default function RegistroPage() {
                   onChange={(e) => setFormData({ ...formData, schoolId: e.target.value })}
                   className="w-full p-6 bg-slate-50 border-2 border-slate-50 rounded-[24px] font-bold text-slate-700 outline-none focus:bg-white focus:border-blue-600/20 transition-all appearance-none cursor-pointer shadow-inner"
                 >
-                  <option value="">Selecciona tu escuela</option>
+                  <option value="">Selecciona tu Centro Educativo</option>
                   {Array.isArray(schools) && schools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                   <option value="otro">+ Otra Institución</option>
                 </select>
@@ -234,7 +234,7 @@ export default function RegistroPage() {
           {step === 2 && (
             <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
               <div>
-                <h3 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">¿Qué te inspira?</h3>
+                <h3 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Motivo de la elección de carrera</h3>
                 <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">Último paso</p>
               </div>
               <textarea 
