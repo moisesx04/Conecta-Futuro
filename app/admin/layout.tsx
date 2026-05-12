@@ -26,7 +26,7 @@ export default function AdminLayout({
 
   const navItems = [
     { id: 'stats', label: 'Resumen', icon: BarChart3, path: '/admin/dashboard' },
-    { id: 'list', label: 'Base de Datos', icon: List, path: '/admin/registrations' },
+    { id: 'list', label: 'Ver registros guardados', icon: List, path: '/admin/registrations' },
   ]
 
   const handleLogout = () => {

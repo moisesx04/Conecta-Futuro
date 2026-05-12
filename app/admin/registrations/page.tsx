@@ -65,7 +65,7 @@ export default function RegistrationsPage() {
     <div className="p-6 lg:p-12">
       <header className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
         <div>
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight">Base de Datos</h1>
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight">Ver registros guardados</h1>
           <p className="text-slate-400 font-bold text-xs uppercase tracking-widest mt-2 ml-1">Visualización de Registros Reales</p>
         </div>
 

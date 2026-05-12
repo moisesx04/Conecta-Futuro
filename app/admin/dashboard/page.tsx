@@ -256,7 +256,7 @@ export default function DashboardPage() {
           <motion.div key="list" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.03)] overflow-hidden mb-12">
             <div className="p-8 border-b border-white/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
               <div>
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Base de Datos</h3>
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Ver registros guardados</h3>
                 <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Registros consolidados</p>
               </div>
               <button 
