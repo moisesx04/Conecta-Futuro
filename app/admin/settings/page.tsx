@@ -9,21 +9,36 @@ export default function SettingsPage() {
   const [success, setSuccess] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
+  const [confirmUser, setConfirmUser] = useState('')
+  const [confirmPass, setConfirmPass] = useState('')
+  const [error, setError] = useState('')
+
   const handleClearData = async () => {
+    if (!confirmUser || !confirmPass) {
+      setError('Escribe tus credenciales')
+      return
+    }
+
     setLoading(true)
+    setError('')
     try {
       const res = await fetch('/api/admin/clear-registrations', {
-        method: 'POST'
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: confirmUser, password: confirmPass })
       })
       if (res.ok) {
         setSuccess(true)
         setShowConfirm(false)
+        setConfirmUser('')
+        setConfirmPass('')
         setTimeout(() => setSuccess(false), 3000)
       } else {
-        alert('Error al limpiar los datos')
+        const data = await res.json()
+        setError(data.error || 'Credenciales inválidas')
       }
     } catch (err) {
-      alert('Error de conexión')
+      setError('Error de conexión')
     } finally {
       setLoading(false)
     }
@@ -57,7 +72,10 @@ export default function SettingsPage() {
             </p>
 
             <button 
-              onClick={() => setShowConfirm(true)}
+              onClick={() => {
+                setShowConfirm(true)
+                setError('')
+              }}
               className="px-8 py-4 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-3 transition-all active:scale-95 shadow-xl shadow-red-600/20"
             >
               <Trash2 className="w-4 h-4" />
@@ -96,26 +114,50 @@ export default function SettingsPage() {
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               className="bg-white rounded-[40px] p-10 max-w-md w-full relative z-10 shadow-2xl"
             >
-              <div className="w-20 h-20 bg-red-50 rounded-[32px] flex items-center justify-center mx-auto mb-8">
+              <div className="w-20 h-20 bg-red-50 rounded-[32px] flex items-center justify-center mx-auto mb-6">
                 <Trash2 className="w-10 h-10 text-red-600" />
               </div>
-              <h3 className="text-2xl font-black text-slate-900 text-center mb-4 tracking-tight">¿Estás seguro?</h3>
-              <p className="text-slate-500 text-center font-bold text-sm mb-10 leading-relaxed uppercase tracking-widest text-[10px]">
-                Esta acción borrará permanentemente todos los registros de estudiantes. No se puede deshacer.
+              <h3 className="text-2xl font-black text-slate-900 text-center mb-2 tracking-tight">Confirmar Acción</h3>
+              <p className="text-slate-500 text-center font-bold text-[10px] mb-8 leading-relaxed uppercase tracking-widest">
+                Escribe tus credenciales para autorizar el borrado total de registros.
               </p>
+
+              {error && (
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-[10px] font-black uppercase tracking-widest text-center">
+                  {error}
+                </motion.div>
+              )}
+
+              <div className="space-y-4 mb-8">
+                <input 
+                  type="text" 
+                  placeholder="Usuario"
+                  value={confirmUser}
+                  onChange={(e) => setConfirmUser(e.target.value)}
+                  className="w-full p-5 bg-slate-50 border-2 border-slate-50 rounded-2xl font-bold text-slate-900 outline-none focus:bg-white focus:border-red-600/20 transition-all text-sm"
+                />
+                <input 
+                  type="password" 
+                  placeholder="Contraseña"
+                  value={confirmPass}
+                  onChange={(e) => setConfirmPass(e.target.value)}
+                  className="w-full p-5 bg-slate-50 border-2 border-slate-50 rounded-2xl font-bold text-slate-900 outline-none focus:bg-white focus:border-red-600/20 transition-all text-sm"
+                />
+              </div>
+
               <div className="flex gap-4">
                 <button 
                   onClick={() => setShowConfirm(false)}
-                  className="flex-1 py-5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-[24px] font-black transition-all"
+                  className="flex-1 py-5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-[24px] font-black transition-all text-xs uppercase tracking-widest"
                 >
                   Cancelar
                 </button>
                 <button 
                   onClick={handleClearData}
                   disabled={loading}
-                  className="flex-1 py-5 bg-red-600 hover:bg-red-700 text-white rounded-[24px] font-black transition-all flex items-center justify-center gap-2 shadow-xl shadow-red-600/20"
+                  className="flex-1 py-5 bg-red-600 hover:bg-red-700 text-white rounded-[24px] font-black transition-all flex items-center justify-center gap-2 shadow-xl shadow-red-600/20 text-xs uppercase tracking-widest"
                 >
-                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sí, Borrar'}
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirmar'}
                 </button>
               </div>
             </motion.div>
