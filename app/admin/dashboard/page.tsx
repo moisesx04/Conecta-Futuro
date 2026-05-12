@@ -89,11 +89,27 @@ export default function DashboardPage() {
     router.push('/admin/login')
   }
 
-  const handleCopyLink = () => {
-    const url = window.location.origin + '/registro'
-    navigator.clipboard.writeText(url)
-    setCopySuccess(true)
-    setTimeout(() => setCopySuccess(false), 2000)
+  const handleCopyLink = async () => {
+    const url = 'https://conecta-futuro-mu.vercel.app/registro'
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Conecta Futuro',
+          text: 'Regístrate en la plataforma Conecta Futuro',
+          url: url
+        })
+      } catch (err) {
+        // Fallback to copy if sharing was cancelled or failed
+        navigator.clipboard.writeText(url)
+        setCopySuccess(true)
+        setTimeout(() => setCopySuccess(false), 2000)
+      }
+    } else {
+      navigator.clipboard.writeText(url)
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 2000)
+    }
   }
 
   if (loading) {
