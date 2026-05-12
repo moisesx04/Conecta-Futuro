@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Users, GraduationCap, School, LogOut, BarChart3, 
   List, RefreshCw, Calendar, ChevronRight, Download,
-  Copy, ExternalLink, ShieldCheck, Menu, X
+  Copy, ExternalLink, ShieldCheck, Menu, X,
+  Sparkles, Brain, Star, TrendingUp, Lightbulb
 } from 'lucide-react'
 
 import { 
@@ -177,36 +178,41 @@ export default function DashboardPage() {
               ))}
             </div>
 
-            {/* Row 1: Activity Line Chart */}
-            <motion.div 
-              className="bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.03)] p-8 flex flex-col h-[350px]"
-            >
-              <div className="mb-6">
-                <h3 className="text-xl font-black text-slate-900 tracking-tight">Actividad de Registro</h3>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Tendencia de los últimos 7 días</p>
-              </div>
-              <div className="flex-1 min-h-0">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={activityData}>
-                    <defs>
-                      <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#2563eb" stopOpacity={0.1}/>
-                        <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} />
-                    <RechartsTooltip content={<CustomTooltip />} />
-                    <Area type="monotone" dataKey="val" stroke="#2563eb" strokeWidth={4} fillOpacity={1} fill="url(#colorVal)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </motion.div>
+            {/* Row 1: Main Stats & Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <motion.div 
+                className="lg:col-span-8 bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.03)] p-8 flex flex-col h-[400px]"
+              >
+                <div className="mb-6 flex justify-between items-center">
+                  <div>
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight">Actividad de Registro</h3>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Tendencia de los últimos 7 días</p>
+                  </div>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-xl">
+                    <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">En Vivo</span>
+                  </div>
+                </div>
+                <div className="flex-1 min-h-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={activityData}>
+                      <defs>
+                        <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#2563eb" stopOpacity={0.1}/>
+                          <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} dy={10} />
+                      <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} />
+                      <RechartsTooltip content={<CustomTooltip />} />
+                      <Area type="monotone" dataKey="val" stroke="#2563eb" strokeWidth={4} fillOpacity={1} fill="url(#colorVal)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </motion.div>
 
-            {/* Row 2: Charts Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-12">
-              <motion.div className="lg:col-span-4 bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.03)] p-8 flex flex-col h-[450px]">
+              <motion.div className="lg:col-span-4 bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.03)] p-8 flex flex-col h-[400px]">
                 <div className="mb-8">
                   <h3 className="text-xl font-black text-slate-900 tracking-tight">Top Instituciones</h3>
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Proporción por Centro</p>
@@ -226,66 +232,6 @@ export default function DashboardPage() {
                     <p className="text-2xl font-black text-slate-900 leading-none">{stats?.total_registrations || 0}</p>
                     <p className="text-[8px] font-black text-slate-400 uppercase mt-1">Total</p>
                   </div>
-                </div>
-              </motion.div>
-
-              <motion.div className="lg:col-span-8 bg-slate-900/90 backdrop-blur-2xl border border-white/5 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 text-white flex flex-col h-[450px]">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-6">
-                  <div>
-                    <h3 className="text-2xl font-black tracking-tight text-white">Demanda Académica</h3>
-                    <p className="text-white/40 text-xs font-bold uppercase tracking-widest mt-1">Tendencias y Preferencias</p>
-                  </div>
-                  <div className="flex bg-white/5 p-1.5 rounded-2xl overflow-x-auto max-w-full custom-scrollbar-white gap-1">
-                    {['Todos', 'Informática', 'Salud', 'Artes', 'Turismo'].map((area) => (
-                      <button 
-                        key={area}
-                        onClick={() => setSelectedArea(area)}
-                        className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                          selectedArea === area ? 'bg-white text-slate-900 shadow-xl scale-105' : 'text-white/40 hover:bg-white/5'
-                        }`}
-                      >
-                        {area}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex-1 min-h-0 mt-4">
-                  {chartData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        layout="vertical"
-                        data={chartData.slice(0, 10)}
-                        margin={{ left: 100, right: 40, top: 0, bottom: 0 }}
-                      >
-                        <XAxis type="number" hide />
-                        <YAxis 
-                          dataKey="name" 
-                          type="category" 
-                          axisLine={false} 
-                          tickLine={false} 
-                          tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 9, fontWeight: 800 }} 
-                          width={90}
-                        />
-                        <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
-                        <Bar 
-                          dataKey="count" 
-                          radius={[0, 20, 20, 0]}
-                          barSize={12}
-                          animationDuration={2000}
-                        >
-                          {chartData.map((entry: any, index: number) => (
-                            <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#3b82f6' : '#ef4444'} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="h-full flex flex-col items-center justify-center opacity-20">
-                      <BarChart3 className="w-16 h-16 mb-4" />
-                      <p className="text-sm font-black uppercase tracking-widest">No hay registros aún</p>
-                    </div>
-                  )}
                 </div>
               </motion.div>
             </div>
@@ -367,6 +313,13 @@ export default function DashboardPage() {
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         .custom-scrollbar-white::-webkit-scrollbar { height: 4px; }
         .custom-scrollbar-white::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 8s linear infinite;
+        }
       `}</style>
     </div>
   )
