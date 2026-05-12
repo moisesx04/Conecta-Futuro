@@ -229,7 +229,7 @@ export default function DashboardPage() {
                 </div>
               </motion.div>
 
-              <motion.div className="lg:col-span-8 bg-slate-900/90 backdrop-blur-2xl border border-white/5 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 text-white flex flex-col min-h-[550px]">
+              <motion.div className="lg:col-span-8 bg-slate-900/90 backdrop-blur-2xl border border-white/5 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 text-white flex flex-col h-[450px]">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-6">
                   <div>
                     <h3 className="text-2xl font-black tracking-tight text-white">Demanda Académica</h3>
@@ -250,43 +250,36 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar-white">
+                <div className="flex-1 min-h-0 mt-4">
                   {chartData.length > 0 ? (
-                    <div className="space-y-10">
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                        {chartData.slice(0, 3).map((career: any, i: number) => (
-                          <motion.div key={career.name} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className={`relative p-6 rounded-[28px] border border-white/5 flex flex-col items-center text-center overflow-hidden group ${i === 0 ? 'bg-blue-600/20 border-blue-500/30' : i === 1 ? 'bg-red-600/20 border-red-500/30' : 'bg-white/5'}`}>
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 font-black text-xl ${i === 0 ? 'bg-blue-600 text-white' : i === 1 ? 'bg-red-600 text-white' : 'bg-white/10 text-white/40'}`}>
-                              {i + 1}
-                            </div>
-                            <h4 className="text-sm font-black text-white mb-2 line-clamp-2 min-h-[40px] leading-tight">{career.name}</h4>
-                            <p className="text-2xl font-black text-white/90">{career.count}</p>
-                            <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest">Registros</p>
-                            <div className="absolute -bottom-4 -right-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                              <GraduationCap className="w-20 h-20" />
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {chartData.slice(3, 15).map((career: any, i: number) => {
-                          const maxCount = Math.max(...chartData.map((c:any) => c.count));
-                          const percentage = (career.count / maxCount) * 100;
-                          return (
-                            <div key={career.name} className="bg-white/5 p-4 rounded-2xl border border-white/5 flex items-center justify-between group hover:bg-white/10 transition-all">
-                              <div className="flex-1 mr-4">
-                                <p className="text-[11px] font-bold text-white/70 group-hover:text-white transition-colors mb-2 line-clamp-1">{career.name}</p>
-                                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                                  <div className={`h-full rounded-full ${i % 2 === 0 ? 'bg-blue-500' : 'bg-red-500'}`} style={{ width: `${percentage}%` }} />
-                                </div>
-                              </div>
-                              <span className="text-xs font-black text-white/40 group-hover:text-white/90">{career.count}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        layout="vertical"
+                        data={chartData.slice(0, 10)}
+                        margin={{ left: 100, right: 40, top: 0, bottom: 0 }}
+                      >
+                        <XAxis type="number" hide />
+                        <YAxis 
+                          dataKey="name" 
+                          type="category" 
+                          axisLine={false} 
+                          tickLine={false} 
+                          tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 9, fontWeight: 800 }} 
+                          width={90}
+                        />
+                        <RechartsTooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+                        <Bar 
+                          dataKey="count" 
+                          radius={[0, 20, 20, 0]}
+                          barSize={12}
+                          animationDuration={2000}
+                        >
+                          {chartData.map((entry: any, index: number) => (
+                            <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#3b82f6' : '#ef4444'} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
                   ) : (
                     <div className="h-full flex flex-col items-center justify-center opacity-20">
                       <BarChart3 className="w-16 h-16 mb-4" />
