@@ -104,7 +104,10 @@ export default function DashboardPage() {
           className="w-10 h-10 border-4 border-blue-600 border-t-red-600 rounded-full"
         />
       </div>
-    )  return (
+    )
+  }
+
+  return (
     <div className="p-6 lg:p-12">
       <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-16">
         <div>
@@ -373,8 +376,5 @@ export default function DashboardPage() {
         .custom-scrollbar-white::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
       `}</style>
     </div>
-  )
-}
-  </div>
   )
 }
