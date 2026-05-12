@@ -29,40 +29,34 @@ export default function AdminLayout({
     { id: 'list', label: 'Consulta de Registro', icon: List, path: '/admin/registrations' },
   ]
 
+  const [authorized, setAuthorized] = useState(false)
+
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('admin_token')
       localStorage.removeItem('admin_session_start')
     }
+    setAuthorized(false)
     router.push('/admin/login')
   }
 
   useEffect(() => {
-    const checkSession = () => {
-      if (typeof window === 'undefined') return
-      
-      const token = localStorage.getItem('admin_token')
-      const sessionStart = localStorage.getItem('admin_session_start')
-      const currentTime = Date.now()
-      const oneHour = 3600000
-
-      if (!token) {
-        router.push('/admin/login')
-      } else if (sessionStart && (currentTime - parseInt(sessionStart)) > oneHour) {
-        handleLogout()
-      }
+    const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null
+    
+    if (!isLoginPage && !token) {
+      router.push('/admin/login')
+    } else {
+      setAuthorized(true)
     }
-    
-    if (!isLoginPage) {
-      checkSession()
-    }
-    
-    const interval = setInterval(() => {
-      if (!isLoginPage) checkSession()
-    }, 60000)
-    
-    return () => clearInterval(interval)
   }, [pathname, router, isLoginPage])
+
+  if (!isLoginPage && !authorized) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-blue-600 border-t-red-600 rounded-full animate-spin" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col lg:flex-row overflow-x-hidden font-sans relative">

@@ -28,7 +28,6 @@ export default function LoginPage() {
 
       if (res.ok) {
         localStorage.setItem('admin_token', data.token)
-        localStorage.setItem('admin_session_start', Date.now().toString())
         router.push('/admin/dashboard')
       } else {
         setError(data.error || 'Credenciales inválidas')
