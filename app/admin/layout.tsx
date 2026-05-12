@@ -26,13 +26,34 @@ export default function AdminLayout({
 
   const navItems = [
     { id: 'stats', label: 'Resumen', icon: BarChart3, path: '/admin/dashboard' },
-    { id: 'list', label: 'Ver registros guardados', icon: List, path: '/admin/registrations' },
+    { id: 'list', label: 'Consulta de Registro', icon: List, path: '/admin/registrations' },
   ]
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token')
+    localStorage.removeItem('admin_session_start')
     router.push('/admin/login')
   }
+
+  useEffect(() => {
+    const checkSession = () => {
+      const token = localStorage.getItem('admin_token')
+      const sessionStart = localStorage.getItem('admin_session_start')
+      const currentTime = Date.now()
+      const oneHour = 3600000
+
+      if (!token) {
+        router.push('/admin/login')
+      } else if (sessionStart && (currentTime - parseInt(sessionStart)) > oneHour) {
+        handleLogout()
+      }
+    }
+    
+    checkSession()
+    // Optional: check every minute
+    const interval = setInterval(checkSession, 60000)
+    return () => clearInterval(interval)
+  }, [pathname, router])
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col lg:flex-row overflow-x-hidden font-sans relative">
@@ -136,12 +157,21 @@ export default function AdminLayout({
           </div>
           <h2 className="font-black tracking-tight text-lg">Conecta <span className="text-red-500">Futuro</span></h2>
         </div>
-        <button 
-          onClick={() => setIsMobileMenuOpen(true)}
-          className="p-3 bg-slate-50 rounded-xl text-slate-600 shadow-sm border border-slate-100 active:scale-95 transition-all"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={handleLogout}
+            className="p-3 bg-red-50 rounded-xl text-red-500 shadow-sm border border-red-100 active:scale-95 transition-all"
+            title="Cerrar Sesión"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
+          <button 
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-3 bg-slate-50 rounded-xl text-slate-600 shadow-sm border border-slate-100 active:scale-95 transition-all"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+        </div>
       </div>
 
       {/* Main Content Area */}
