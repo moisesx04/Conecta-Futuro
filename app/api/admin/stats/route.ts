@@ -63,7 +63,11 @@ export async function GET() {
     return NextResponse.json({
       total_registrations: total,
       by_career: byCareer,
-      by_school: bySchool
+      by_school: bySchool,
+      activity: [
+        { name: 'Lun', val: 0 }, { name: 'Mar', val: 0 }, { name: 'Mie', val: 0 },
+        { name: 'Jue', val: 0 }, { name: 'Vie', val: 0 }, { name: 'Sab', val: 0 }, { name: 'Dom', val: 0 }
+      ]
     });
   }
 }

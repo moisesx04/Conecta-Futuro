@@ -62,164 +62,119 @@ export default function RegistrationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex font-sans">
-      {/* Sidebar (Simplified) */}
-      <aside className="hidden lg:flex w-72 bg-blue-900 h-screen sticky top-0 flex-col text-white">
-        <div className="p-8 flex items-center gap-3">
-          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-900 shadow-lg">
-            <GraduationCap className="w-6 h-6" />
-          </div>
-          <div>
-            <h2 className="font-black tracking-tight text-xl">Conecta <span className="text-red-500">Futuro</span></h2>
-            <p className="text-white/40 text-[9px] font-black uppercase tracking-widest leading-none">Admin Panel</p>
-          </div>
+    <div className="p-6 lg:p-12">
+      <header className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+        <div>
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight">Base de Datos</h1>
+          <p className="text-slate-400 font-bold text-xs uppercase tracking-widest mt-2 ml-1">Visualización de Registros Reales</p>
         </div>
 
-        <nav className="flex-1 px-4 space-y-2 mt-4">
-          <button onClick={() => router.push('/admin/dashboard')} className="w-full flex items-center gap-3 px-6 py-4 rounded-2xl font-bold text-slate-400 hover:bg-white/5 hover:text-white transition-all">
-            <BarChart3 className="w-5 h-5" />
-            <span>Dashboard</span>
-          </button>
-          <button className="w-full flex items-center gap-3 px-6 py-4 rounded-2xl font-bold bg-white/10 text-white shadow-xl">
-            <List className="w-5 h-5 text-red-500" />
-            <span>Base de Datos</span>
-          </button>
-        </nav>
-
-        <div className="p-6 border-t border-white/5">
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-6 py-4 rounded-xl font-bold text-red-400 hover:bg-red-500/10 transition-all">
-            <LogOut className="w-5 h-5" />
-            <span>Cerrar Sesión</span>
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <div className="flex-1 md:w-80 bg-white/60 backdrop-blur-xl border border-white rounded-2xl flex items-center px-4 shadow-sm">
+            <Search className="w-5 h-5 text-slate-300" />
+            <input 
+              type="text"
+              placeholder="Buscar por nombre, carrera..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full p-4 bg-transparent outline-none text-sm font-bold placeholder:text-slate-300"
+            />
+          </div>
+          <button className="p-4 bg-white/60 backdrop-blur-xl border border-white rounded-2xl hover:bg-white transition-all shadow-sm">
+            <Filter className="w-5 h-5 text-slate-600" />
           </button>
         </div>
-      </aside>
+      </header>
 
-      {/* Main Content */}
-      <main className="flex-1 p-6 lg:p-12 relative overflow-hidden">
-        {/* Background blobs */}
-        <div className="fixed inset-0 pointer-events-none opacity-40">
-          <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/5 rounded-full blur-[100px]" />
-          <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-red-600/5 rounded-full blur-[100px]" />
+      <section className="relative z-10 bg-white/60 backdrop-blur-2xl border border-white rounded-[40px] shadow-[0_40px_100px_-30px_rgba(0,0,0,0.05)] overflow-hidden mb-12">
+        <div className="p-8 border-b border-white/40 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              {filteredRegistrations.length} Registros Encontrados
+            </p>
+          </div>
+          <button 
+            onClick={() => {
+              const csv = filteredRegistrations.map(r => `${r.full_name},${r.school_name},${r.career_name},${r.created_at}`).join('\n')
+              const blob = new Blob([csv], { type: 'text/csv' })
+              const url = URL.createObjectURL(blob)
+              const a = document.createElement('a')
+              a.href = url
+              a.download = 'registros_conecta_futuro.csv'
+              a.click()
+            }}
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-blue-600/20 hover:scale-105 transition-all active:scale-95"
+          >
+            <Download className="w-4 h-4" />
+            <span>Exportar</span>
+          </button>
         </div>
 
-        <header className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-          <div>
-            <div className="flex items-center gap-4 mb-2">
-              <button onClick={() => router.push('/admin/dashboard')} className="p-2 hover:bg-white rounded-xl transition-all">
-                <ChevronLeft className="w-6 h-6 text-slate-400" />
-              </button>
-              <h1 className="text-4xl font-black text-slate-900 tracking-tight">Base de Datos</h1>
-            </div>
-            <p className="text-slate-400 font-bold text-xs uppercase tracking-widest ml-12">Visualización de Registros Reales</p>
-          </div>
-
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            <div className="flex-1 md:w-80 bg-white/60 backdrop-blur-xl border border-white rounded-2xl flex items-center px-4 shadow-sm">
-              <Search className="w-5 h-5 text-slate-300" />
-              <input 
-                type="text"
-                placeholder="Buscar por nombre, carrera..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-4 bg-transparent outline-none text-sm font-bold placeholder:text-slate-300"
-              />
-            </div>
-            <button className="p-4 bg-white/60 backdrop-blur-xl border border-white rounded-2xl hover:bg-white transition-all shadow-sm">
-              <Filter className="w-5 h-5 text-slate-600" />
-            </button>
-          </div>
-        </header>
-
-        <section className="relative z-10 bg-white/60 backdrop-blur-2xl border border-white rounded-[40px] shadow-[0_40px_100px_-30px_rgba(0,0,0,0.05)] overflow-hidden">
-          <div className="p-8 border-b border-white/40 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                {filteredRegistrations.length} Registros Encontrados
-              </p>
-            </div>
-            <button 
-              onClick={() => {
-                const csv = filteredRegistrations.map(r => `${r.full_name},${r.school_name},${r.career_name},${r.created_at}`).join('\n')
-                const blob = new Blob([csv], { type: 'text/csv' })
-                const url = URL.createObjectURL(blob)
-                const a = document.createElement('a')
-                a.href = url
-                a.download = 'registros_conecta_futuro.csv'
-                a.click()
-              }}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-blue-600/20 hover:scale-105 transition-all active:scale-95"
-            >
-              <Download className="w-4 h-4" />
-              <span>Exportar</span>
-            </button>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-slate-50/50">
-                  <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Estudiante</th>
-                  <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Institución de Origen</th>
-                  <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Carrera Elegida</th>
-                  <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Fecha</th>
-                  <th className="px-10 py-6 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/40">
-                {filteredRegistrations.length > 0 ? (
-                  filteredRegistrations.map((r, i) => (
-                    <motion.tr 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.03 }}
-                      key={r.id} 
-                      className="hover:bg-white transition-all group"
-                    >
-                      <td className="px-10 py-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-slate-400 font-black text-xs border border-white">
-                            {r.full_name?.charAt(0)}
-                          </div>
-                          <p className="font-black text-slate-900 text-sm">{r.full_name}</p>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-slate-50/50">
+                <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Estudiante</th>
+                <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Institución de Origen</th>
+                <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Carrera Elegida</th>
+                <th className="px-10 py-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Fecha</th>
+                <th className="px-10 py-6 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/40">
+              {filteredRegistrations.length > 0 ? (
+                filteredRegistrations.map((r, i) => (
+                  <motion.tr 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.03 }}
+                    key={r.id} 
+                    className="hover:bg-white transition-all group"
+                  >
+                    <td className="px-10 py-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-slate-400 font-black text-xs border border-white">
+                          {r.full_name?.charAt(0)}
                         </div>
-                      </td>
-                      <td className="px-10 py-6 text-slate-600 text-xs font-bold">{r.school_name}</td>
-                      <td className="px-10 py-6">
-                        <span className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg font-black text-[9px] uppercase tracking-widest border border-blue-100/50">
-                          {r.career_name}
-                        </span>
-                      </td>
-                      <td className="px-10 py-6 text-slate-400 text-[10px] font-black uppercase">
-                        {new Date(r.created_at).toLocaleDateString()}
-                      </td>
-                      <td className="px-10 py-6 text-right">
-                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="p-3 bg-slate-50 text-slate-400 rounded-xl hover:text-blue-600 hover:bg-blue-50 transition-all">
-                            <ExternalLink className="w-4 h-4" />
-                          </button>
-                          <button className="p-3 bg-slate-50 text-slate-400 rounded-xl hover:text-red-500 hover:bg-red-50 transition-all">
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={5} className="py-32 text-center">
-                      <div className="flex flex-col items-center opacity-20">
-                        <Users className="w-16 h-16 mb-4" />
-                        <p className="text-sm font-black uppercase tracking-widest">No hay registros reales aún</p>
+                        <p className="font-black text-slate-900 text-sm">{r.full_name}</p>
                       </div>
                     </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </main>
+                    <td className="px-10 py-6 text-slate-600 text-xs font-bold">{r.school_name}</td>
+                    <td className="px-10 py-6">
+                      <span className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg font-black text-[9px] uppercase tracking-widest border border-blue-100/50">
+                        {r.career_name}
+                      </span>
+                    </td>
+                    <td className="px-10 py-6 text-slate-400 text-[10px] font-black uppercase">
+                      {new Date(r.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-10 py-6 text-right">
+                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button className="p-3 bg-slate-50 text-slate-400 rounded-xl hover:text-blue-600 hover:bg-blue-50 transition-all">
+                          <ExternalLink className="w-4 h-4" />
+                        </button>
+                        <button className="p-3 bg-slate-50 text-slate-400 rounded-xl hover:text-red-500 hover:bg-red-50 transition-all">
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="py-32 text-center">
+                    <div className="flex flex-col items-center opacity-20">
+                      <Users className="w-16 h-16 mb-4" />
+                      <p className="text-sm font-black uppercase tracking-widest">No hay registros reales aún</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   )
 }
