@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Users, GraduationCap, School, LogOut, BarChart3, 
-  List, ExternalLink, Menu, X, ChevronRight
+  List, ExternalLink, Menu, X, ChevronRight, Settings
 } from 'lucide-react'
 
 export default function AdminLayout({
@@ -56,6 +56,7 @@ export default function AdminLayout({
   const navItems = [
     { id: 'stats', label: 'Resumen', icon: BarChart3, path: '/admin/dashboard' },
     { id: 'list', label: 'Consulta de Registro', icon: List, path: '/admin/registrations' },
+    { id: 'settings', label: 'Configuración', icon: Settings, path: '/admin/settings' },
   ]
 
   return (
